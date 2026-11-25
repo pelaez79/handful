@@ -245,7 +245,7 @@ table.calc td:first-child{font-weight:600}
   padding-bottom:env(safe-area-inset-bottom);
   box-shadow:0 -6px 22px rgba(28,36,32,.10);
 }
-.tabbar nav{max-width:1060px; margin:0 auto; display:grid; grid-template-columns:repeat(6,1fr)}
+.tabbar nav{max-width:1060px; margin:0 auto; display:grid; grid-template-columns:repeat(7,1fr)}
 .tabbar button{
   background:transparent; border:0; color:var(--ink2); padding:9px 2px 8px;
   display:flex; flex-direction:column; align-items:center; gap:3px;
@@ -254,6 +254,21 @@ table.calc td:first-child{font-weight:600}
 .tabbar button.on{color:var(--green)}
 @media (prefers-color-scheme: dark){ .tabbar button.on{color:var(--amber-soft)} }
 .tabbar button svg{width:23px; height:23px}
+
+/* ---------- Composición corporal (rango local) ---------- */
+.ladder{display:flex; flex-direction:column; gap:8px; margin-top:6px}
+.ladder .st{display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:12px; padding:10px 14px; background:var(--card)}
+.ladder .st .rng{font-family:"Fraunces",serif; font-weight:900; font-size:19px; min-width:86px}
+.ladder .st .dsc{font-size:13.5px; color:var(--ink2); line-height:1.35}
+.ladder .st.on{background:var(--green); border-color:var(--green); color:#FBF7EC}
+.ladder .st.on .dsc{color:#FBF7EC; opacity:.92}
+@media (prefers-color-scheme: dark){ .ladder .st.on{background:var(--green); color:#FBF7EC} }
+.bhist{display:flex; flex-direction:column; gap:8px}
+.bhist .row{display:flex; align-items:center; gap:10px; border:1px solid var(--line); border-radius:12px; padding:9px 13px; font-size:14px}
+.bhist .row .dt{color:var(--ink2); font-size:13px; min-width:104px}
+.bhist .row .bd{font-weight:800}
+.bhist .row .tr{margin-left:auto; font-weight:700; font-size:13px}
+.bhist .row button{margin-left:8px; background:transparent; border:0; color:var(--ink2); font-size:16px; cursor:pointer; padding:2px 6px}
 </style>
 </head>
 <body>
@@ -574,6 +589,61 @@ table.calc td:first-child{font-weight:600}
     </div>
   </section>
 
+  <!-- ============ 7 · COMPOSICIÓN CORPORAL (rango local, sin foto ni red) ============ -->
+  <section class="screen" id="scr-cuerpo">
+    <div class="kicker" data-i18n="comp_kicker">Tu punto de partida</div>
+    <h2 data-i18n="comp_h">Composición corporal</h2>
+    <p class="lede" data-i18n="comp_lede">Un rango honesto de tu grasa corporal desde tus medidas con cinta — calculado aquí, en tu teléfono. Sin foto, sin cuentas, sin que nada salga de este dispositivo.</p>
+    <div class="card" style="margin-bottom:14px">
+      <div class="two">
+        <div class="field">
+          <label class="flabel" for="b-sex" data-i18n="f_sex">Sexo</label>
+          <select id="b-sex">
+            <option value="M" data-i18n="sex_m">Hombre</option>
+            <option value="F" data-i18n="sex_f">Mujer</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="flabel" for="b-height" data-i18n="f_height">Estatura (cm)</label>
+          <input type="number" id="b-height" min="120" max="230" inputmode="numeric" />
+        </div>
+      </div>
+      <div class="two">
+        <div class="field">
+          <label class="flabel" for="b-weight" data-i18n="f_weight">Peso actual (kg)</label>
+          <input type="number" id="b-weight" min="35" max="300" step="0.5" inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label class="flabel" for="b-neck" data-i18n="comp_neck">Cuello (cm)</label>
+          <input type="number" id="b-neck" min="20" max="80" step="0.5" inputmode="decimal" />
+        </div>
+      </div>
+      <div class="two">
+        <div class="field">
+          <label class="flabel" for="b-waist" data-i18n="comp_waist">Cintura (cm)</label>
+          <input type="number" id="b-waist" min="40" max="250" step="0.5" inputmode="decimal" />
+        </div>
+        <div class="field" id="b-hip-field" style="display:none">
+          <label class="flabel" for="b-hip" data-i18n="comp_hip">Cadera (cm)</label>
+          <input type="number" id="b-hip" min="50" max="250" step="0.5" inputmode="decimal" />
+        </div>
+      </div>
+      <p style="font-size:13px; color:var(--ink2); margin:2px 0 12px" data-i18n="comp_howto">Cómo medirte: la cintura a la altura del ombligo, sin apretar la cinta ni meter la panza; el cuello justo debajo de la nuez; la cadera por la parte más ancha. Mídete por la mañana y usa siempre la misma cinta.</p>
+      <button type="button" class="addbtn" id="b-calc" style="width:100%; min-height:48px" data-i18n="comp_btn">Calcular y guardar</button>
+      <p id="b-msg" style="font-size:13.5px; margin:10px 0 0; display:none"></p>
+    </div>
+    <div id="b-result"></div>
+    <div class="card" style="margin-bottom:14px">
+      <h3 class="serif" style="font-size:20px; font-weight:900; margin-bottom:6px" data-i18n="comp_ladder_h">Cómo se ve cada rango</h3>
+      <p style="font-size:13.5px; color:var(--ink2); margin:0 0 10px" data-i18n="comp_caveat">El mismo % se ve distinto en cada cuerpo: más o menos músculo y otra distribución cambian el espejo. Compárate solo contigo y con tu propia tendencia.</p>
+      <div class="ladder" id="b-ladder"></div>
+    </div>
+    <div class="card">
+      <h3 class="serif" style="font-size:20px; font-weight:900; margin-bottom:10px" data-i18n="comp_hist_h">Tu historial</h3>
+      <div id="b-history"></div>
+    </div>
+  </section>
+
   <div class="disclaimer"><b data-i18n="disc_b">Aviso:</b> <span data-i18n="disc_t">Plan general de alimentación. No es un dispositivo médico ni sustituye el consejo de un profesional de la salud.</span></div>
   <p class="foot">Handful · by Pelaez Nutrition</p>
 </main>
@@ -603,6 +673,10 @@ table.calc td:first-child{font-weight:600}
     <button type="button" data-scr="calc">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="3" width="14" height="18" rx="2.5"/><path d="M8.5 7h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 15.5h.01M12 15.5h.01M15.5 15.5h.01"/></svg>
       <span data-i18n="tab_calc">Calculadora</span>
+    </button>
+    <button type="button" data-scr="cuerpo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9.5h16M4 14.5h16"/><path d="M7 9.5v2M11 9.5v3M15 9.5v2M7 14.5v2M11 14.5v3M15 14.5v2"/></svg>
+      <span data-i18n="tab_cuerpo">Cuerpo</span>
     </button>
   </nav>
 </div>
@@ -758,7 +832,34 @@ es:{
  calc_table_note:"La porción de carbohidrato de una comida principal es el 40% de tus carbos del día; la de proteína, el 30% de tu proteína del día.",
  calc_basis_carb:"40% de tus carbos del día", calc_basis_protein:"30% de tu proteína del día",
  disc_b:"Aviso:", disc_t:"Plan general de alimentación. No es un dispositivo médico ni sustituye el consejo de un profesional de la salud.",
- tab_datos:"Datos", tab_numeros:"Números", tab_plan:"Plan", tab_guia:"Guía", tab_registro:"Registro", tab_calc:"Calculadora",
+ tab_datos:"Datos", tab_numeros:"Números", tab_plan:"Plan", tab_guia:"Guía", tab_registro:"Registro", tab_calc:"Calculadora", tab_cuerpo:"Cuerpo",
+ comp_kicker:"Tu punto de partida", comp_h:"Composición corporal",
+ comp_lede:"Un rango honesto de tu grasa corporal desde tus medidas con cinta — calculado aquí, en tu teléfono. Sin foto, sin cuentas, sin que nada salga de este dispositivo.",
+ comp_neck:"Cuello (cm)", comp_waist:"Cintura (cm)", comp_hip:"Cadera (cm)",
+ comp_howto:"Cómo medirte: la cintura a la altura del ombligo, sin apretar la cinta ni meter la panza; el cuello justo debajo de la nuez; la cadera por la parte más ancha. Mídete por la mañana y usa siempre la misma cinta.",
+ comp_btn:"Calcular y guardar",
+ comp_need:"Revisa tus medidas: falta algún dato o un número no cuadra (la cintura debe ser mayor que el cuello).",
+ comp_saved:"Guardado. Esto es una estimación: lo que vale es tu tendencia en el tiempo.",
+ comp_range_lab:"Tu rango estimado de grasa corporal",
+ comp_margin:"Estimación aproximada: margen típico de ±3–5 puntos. Es mejor que una báscula casera de bioimpedancia y sigue tu tendencia; no es un DEXA ni una medición médica.",
+ comp_fat:"Masa grasa aprox.", comp_lean:"Masa magra aprox.",
+ comp_ladder_h:"Cómo se ve cada rango",
+ comp_caveat:"El mismo % se ve distinto en cada cuerpo: más o menos músculo y otra distribución cambian el espejo. Compárate solo contigo y con tu propia tendencia.",
+ comp_hist_h:"Tu historial", comp_empty:"Todavía no hay registros. Tu primera medición es tu punto de partida.",
+ comp_first:"Primer registro: tu punto de partida. Vuelve a medirte en 2–4 semanas para ver tu tendencia.",
+ comp_down:"bajando ↓", comp_up:"subiendo ↑", comp_stable:"estable →",
+ comp_st_m0:"Definición extrema, propia de competición. Difícil de sostener.",
+ comp_st_m1:"Atlético y definido.",
+ comp_st_m2:"En forma: rango saludable habitual en hombres activos.",
+ comp_st_m3:"Promedio saludable.",
+ comp_st_m4:"Por encima del rango saludable habitual.",
+ comp_st_m5:"Grasa alta: la zona donde más compensa avanzar, con calma y constancia.",
+ comp_st_f0:"Definición extrema, propia de competición. Difícil de sostener.",
+ comp_st_f1:"Atlética y definida.",
+ comp_st_f2:"En forma: rango saludable habitual en mujeres activas.",
+ comp_st_f3:"Promedio saludable.",
+ comp_st_f4:"Por encima del rango saludable habitual.",
+ comp_st_f5:"Grasa alta: la zona donde más compensa avanzar, con calma y constancia.",
  kcal_word:"kcal"
 },
 en:{
@@ -862,7 +963,34 @@ en:{
  calc_table_note:"A main meal's carb portion is 40% of your daily carbs; its protein portion is 30% of your daily protein.",
  calc_basis_carb:"40% of your daily carbs", calc_basis_protein:"30% of your daily protein",
  disc_b:"Notice:", disc_t:"A general meal plan. It is not a medical device and does not replace the advice of a health professional.",
- tab_datos:"Details", tab_numeros:"Numbers", tab_plan:"Plan", tab_guia:"Guide", tab_registro:"Log", tab_calc:"Calculator",
+ tab_datos:"Details", tab_numeros:"Numbers", tab_plan:"Plan", tab_guia:"Guide", tab_registro:"Log", tab_calc:"Calculator", tab_cuerpo:"Body",
+ comp_kicker:"Your starting point", comp_h:"Body composition",
+ comp_lede:"An honest range for your body fat from your own tape measurements — calculated right here, on your phone. No photo, no accounts, nothing leaves this device.",
+ comp_neck:"Neck (cm)", comp_waist:"Waist (cm)", comp_hip:"Hip (cm)",
+ comp_howto:"How to measure: waist at navel height, tape snug but not tight, belly relaxed; neck just below the Adam's apple; hip at its widest point. Measure in the morning and always use the same tape.",
+ comp_btn:"Calculate & save",
+ comp_need:"Check your measurements: something is missing or off (your waist must be larger than your neck).",
+ comp_saved:"Saved. This is an estimate: what matters is your trend over time.",
+ comp_range_lab:"Your estimated body-fat range",
+ comp_margin:"Rough estimate: typical margin of ±3–5 points. Better than a home bioimpedance scale and it tracks your trend; it is not a DEXA or a medical measurement.",
+ comp_fat:"Approx. fat mass", comp_lean:"Approx. lean mass",
+ comp_ladder_h:"What each range looks like",
+ comp_caveat:"The same % looks different on every body: more or less muscle and a different fat distribution change the mirror. Compare only with yourself and your own trend.",
+ comp_hist_h:"Your history", comp_empty:"No records yet. Your first measurement is your starting point.",
+ comp_first:"First record: your starting point. Measure again in 2–4 weeks to see your trend.",
+ comp_down:"trending down ↓", comp_up:"trending up ↑", comp_stable:"stable →",
+ comp_st_m0:"Extreme definition, competition territory. Hard to sustain.",
+ comp_st_m1:"Athletic and defined.",
+ comp_st_m2:"In shape: the usual healthy range for active men.",
+ comp_st_m3:"Healthy average.",
+ comp_st_m4:"Above the usual healthy range.",
+ comp_st_m5:"High body fat: the zone where steady, calm progress pays off most.",
+ comp_st_f0:"Extreme definition, competition territory. Hard to sustain.",
+ comp_st_f1:"Athletic and defined.",
+ comp_st_f2:"In shape: the usual healthy range for active women.",
+ comp_st_f3:"Healthy average.",
+ comp_st_f4:"Above the usual healthy range.",
+ comp_st_f5:"High body fat: the zone where steady, calm progress pays off most.",
  kcal_word:"kcal"
 }};
 
@@ -873,6 +1001,7 @@ var state = {
  variants:[0,0,0,0],
  log:{},               /* { "YYYY-MM-DD": [{foodId, grams, meal}] } */
  products:{},          /* scanned/created products by barcode: { code: {code,name,kcal,p,c,f,serving,source,ts} } */
+ body:[],              /* composición corporal (rango local): [{date, sex, height, weight, neck, waist, hip, navy, rfm, lo, hi}] */
  scanMeal:null, scanProduct:null, scanUnit:"gram", scanCode:null,
  viewDate:null,        /* day shown in the diary; set at init */
  selFood:null, selUnit:"handful", selMeal:null, editIdx:null, copyArm:false,
@@ -884,7 +1013,7 @@ function todayStr(){ return dStr(new Date()); }
 function shiftDate(str, days){ var p = str.split("-"); var d = new Date(+p[0], +p[1]-1, +p[2]); d.setDate(d.getDate()+days); return dStr(d); }
 function defaultMeal(){ var h = new Date().getHours(); return h < 11 ? "desayuno" : (h < 15 ? "almuerzo" : (h < 18 ? "merienda" : "cena")); }
 function save(){
- try { localStorage.setItem(LS_KEY, JSON.stringify({ lang:state.lang, profile:state.profile, variants:state.variants, log:state.log, products:state.products })); } catch(e){}
+ try { localStorage.setItem(LS_KEY, JSON.stringify({ lang:state.lang, profile:state.profile, variants:state.variants, log:state.log, products:state.products, body:state.body })); } catch(e){}
 }
 function load(){
  try {
@@ -895,6 +1024,7 @@ function load(){
    if (s.variants) state.variants = s.variants;
    if (s.log) state.log = s.log;
    if (s.products) state.products = s.products;
+   if (s.body) state.body = s.body;
  } catch(e){}
 }
 function dayEntries(){ return state.log[state.viewDate] || []; }
@@ -1248,7 +1378,151 @@ function renderCalc(){
  }).join("");
  $("calc-table").innerHTML = rows;
 }
-function renderAll(){ applyI18n(); renderAvoidChips(); renderNumbers(); renderPlan(); renderGuide(); renderTracker(); renderCalc(); save(); }
+/* ================= Composición corporal — rango local =================
+   Dos métodos con cinta (US Navy y RFM), calculados en el dispositivo.
+   La salida es SIEMPRE un rango, nunca un número puntual: la banda cubre
+   la diferencia entre métodos más el margen típico de cada uno (±3–5 pp).
+   Sin foto, sin cámara, sin red: las medidas nunca salen del teléfono.
+   Recalibrar el plan con este rango queda FUERA de esta versión: eso
+   llega con el check-in semanal adaptativo. */
+function cmToIn(cm){ return cm/2.54; }
+function navyBF(sex, heightCm, neckCm, waistCm, hipCm){
+ var h = cmToIn(heightCm), n = cmToIn(neckCm), w = cmToIn(waistCm);
+ if (!(h > 0) || !(n > 0) || !(w > 0)) return null;
+ var v;
+ if (sex === "F"){
+   var hip = cmToIn(hipCm || 0);
+   if (!(hip > 0) || !(w + hip - n > 0)) return null;
+   v = 163.205*Math.log10(w + hip - n) - 97.684*Math.log10(h) - 78.387;
+ } else {
+   if (!(w - n > 0)) return null;
+   v = 86.010*Math.log10(w - n) - 70.041*Math.log10(h) + 36.76;
+ }
+ return (v > 0 && v < 75) ? v : null;
+}
+function rfmBF(sex, heightCm, waistCm){
+ if (!(heightCm > 0) || !(waistCm > 0)) return null;
+ var v = (sex === "F" ? 76 : 64) - 20*(heightCm/waistCm);
+ return (v > 0 && v < 75) ? v : null;
+}
+function bodyBand(navy, rfm){
+ var vals = [navy, rfm].filter(function(x){ return x != null; });
+ if (!vals.length) return null;
+ var lo, hi;
+ if (vals.length === 2){ lo = Math.floor(Math.min(vals[0], vals[1]) - 2); hi = Math.ceil(Math.max(vals[0], vals[1]) + 2); }
+ else { lo = Math.floor(vals[0] - 3); hi = Math.ceil(vals[0] + 3); }
+ if (hi - lo < 4) hi += (4 - (hi - lo));
+ return { lo: Math.max(3, lo), hi: Math.min(65, hi) };
+}
+function computeBody(m){
+ var navy = navyBF(m.sex, m.height, m.neck, m.waist, m.hip);
+ var rfm = rfmBF(m.sex, m.height, m.waist);
+ var band = bodyBand(navy, rfm);
+ if (!band) return null;
+ return { navy: navy, rfm: rfm, lo: band.lo, hi: band.hi };
+}
+var BODY_STATIONS = {
+ M: [ {lo:0, hi:9, lab:"<10%"}, {lo:10, hi:14, lab:"10–14%"}, {lo:15, hi:19, lab:"15–19%"}, {lo:20, hi:24, lab:"20–24%"}, {lo:25, hi:29, lab:"25–29%"}, {lo:30, hi:999, lab:"30%+"} ],
+ F: [ {lo:0, hi:13, lab:"<14%"}, {lo:14, hi:20, lab:"14–20%"}, {lo:21, hi:24, lab:"21–24%"}, {lo:25, hi:29, lab:"25–29%"}, {lo:30, hi:34, lab:"30–34%"}, {lo:35, hi:999, lab:"35%+"} ]
+};
+function bodyStationsFor(sex, lo, hi){
+ var sts = BODY_STATIONS[sex === "F" ? "F" : "M"], on = [];
+ sts.forEach(function(s, i){ if (lo <= s.hi && hi >= s.lo) on.push(i); });
+ return on;
+}
+function sortedBody(){ return state.body.slice().sort(function(a, b){ return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0); }); }
+function upsertBodyRecord(rec){
+ state.body = state.body.filter(function(r){ return r.date !== rec.date; }).concat([rec]);
+ save();
+ return rec;
+}
+function bodyTrend(){
+ var list = sortedBody();
+ if (list.length < 2) return null;
+ var a = list[list.length - 2], b = list[list.length - 1];
+ var d = (b.lo + b.hi)/2 - (a.lo + a.hi)/2;
+ if (d <= -1) return "down";
+ if (d >= 1) return "up";
+ return "stable";
+}
+function fmtDateShort(ds){
+ var p = ds.split("-"); var d = new Date(+p[0], +p[1] - 1, +p[2]);
+ return d.toLocaleDateString(state.lang === "en" ? "en-US" : "es-ES", { day:"numeric", month:"short", year:"numeric" });
+}
+function syncBodyForm(){
+ var p = state.profile;
+ $("b-sex").value = p.sex;
+ if (!$("b-height").value) $("b-height").value = p.height;
+ if (!$("b-weight").value) $("b-weight").value = p.weight;
+ $("b-hip-field").style.display = (p.sex === "F") ? "" : "none";
+}
+function renderBody(){
+ var list = sortedBody();
+ var latest = list.length ? list[list.length - 1] : null;
+ var sex = latest ? latest.sex : state.profile.sex;
+ var sts = BODY_STATIONS[sex === "F" ? "F" : "M"];
+ var onIdx = latest ? bodyStationsFor(sex, latest.lo, latest.hi) : [];
+ $("b-ladder").innerHTML = sts.map(function(s, i){
+   return '<div class="st' + (onIdx.indexOf(i) >= 0 ? " on" : "") + '"><div class="rng">' + s.lab + '</div><div class="dsc">' + t("comp_st_" + (sex === "F" ? "f" : "m") + i) + "</div></div>";
+ }).join("");
+ if (latest){
+   var fatLo = latest.weight*latest.lo/100, fatHi = latest.weight*latest.hi/100;
+   var tr = bodyTrend();
+   var trTxt = !tr ? t("comp_first") : t("comp_" + tr);
+   $("b-result").innerHTML =
+     '<div class="bigcard" style="margin-bottom:14px"><div class="lab">' + t("comp_range_lab") + '</div>' +
+     '<div class="val">' + latest.lo + "–" + latest.hi + "<small>%</small></div>" +
+     "<p>" + t("comp_margin") + "</p></div>" +
+     '<div class="grid" style="margin-bottom:14px">' +
+     '<div class="card numcard"><div class="lab">' + t("comp_fat") + '</div><div class="val" style="font-size:26px; padding-top:6px">' + fmt1(fatLo) + "–" + fmt1(fatHi) + "<small> kg</small></div></div>" +
+     '<div class="card numcard"><div class="lab">' + t("comp_lean") + '</div><div class="val" style="font-size:26px; padding-top:6px">' + fmt1(latest.weight - fatHi) + "–" + fmt1(latest.weight - fatLo) + "<small> kg</small></div></div></div>" +
+     '<p style="font-size:14px; margin:0 0 14px"><b>' + fmtDateShort(latest.date) + "</b> · " + trTxt + "</p>";
+ } else {
+   $("b-result").innerHTML = "";
+ }
+ if (list.length){
+   var rows = list.slice().reverse().map(function(r, ri){
+     var idx = list.length - 1 - ri;
+     var prev = idx > 0 ? list[idx - 1] : null;
+     var tr = "";
+     if (prev){
+       var d = (r.lo + r.hi)/2 - (prev.lo + prev.hi)/2;
+       tr = d <= -1 ? t("comp_down") : (d >= 1 ? t("comp_up") : t("comp_stable"));
+     }
+     return '<div class="row"><span class="dt">' + fmtDateShort(r.date) + '</span><span class="bd">' + r.lo + "–" + r.hi + '%</span><span style="color:var(--ink2)">' + fmt1(r.weight) + " kg · " + fmt1(r.waist) + ' cm</span><span class="tr">' + tr + '</span><button type="button" data-bdel="' + r.date + '" aria-label="×">×</button></div>';
+   }).join("");
+   $("b-history").innerHTML = '<div class="bhist">' + rows + "</div>";
+ } else {
+   $("b-history").innerHTML = '<p style="font-size:14px; color:var(--ink2); margin:0">' + t("comp_empty") + "</p>";
+ }
+}
+$("b-sex").addEventListener("change", function(){
+ $("b-hip-field").style.display = (this.value === "F") ? "" : "none";
+});
+$("b-calc").addEventListener("click", function(){
+ var sex = $("b-sex").value;
+ var height = parseFloat($("b-height").value), weight = parseFloat($("b-weight").value);
+ var neck = parseFloat($("b-neck").value), waist = parseFloat($("b-waist").value);
+ var hip = sex === "F" ? parseFloat($("b-hip").value) : null;
+ var msg = $("b-msg");
+ var okInputs = isFinite(height) && isFinite(weight) && isFinite(neck) && isFinite(waist) && (sex !== "F" || isFinite(hip));
+ var calc = okInputs ? computeBody({ sex:sex, height:height, neck:neck, waist:waist, hip:hip }) : null;
+ if (!calc){
+   msg.style.display = "block"; msg.style.color = "#B3402A"; msg.textContent = t("comp_need");
+   return;
+ }
+ upsertBodyRecord({ date: todayStr(), sex:sex, height:height, weight:weight, neck:neck, waist:waist, hip:hip, navy:calc.navy, rfm:calc.rfm, lo:calc.lo, hi:calc.hi });
+ msg.style.display = "block"; msg.style.color = ""; msg.textContent = t("comp_saved");
+ renderBody();
+});
+$("b-history").addEventListener("click", function(e){
+ var b = e.target.closest("[data-bdel]"); if (!b) return;
+ var d = b.getAttribute("data-bdel");
+ state.body = state.body.filter(function(r){ return r.date !== d; });
+ save(); renderBody();
+});
+
+function renderAll(){ applyI18n(); renderAvoidChips(); renderNumbers(); renderPlan(); renderGuide(); renderTracker(); renderCalc(); renderBody(); save(); }
 
 /* ================= Events ================= */
 function syncFormFromProfile(){
@@ -1609,6 +1883,7 @@ $("scan-create-btn").addEventListener("click", function(){
 $("calc-weight").value = state.calcWeight;
 syncAdjSeg();
 syncFormFromProfile();
+syncBodyForm();
 renderAll();
 </script>
 </body>

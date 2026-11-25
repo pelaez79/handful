@@ -187,6 +187,19 @@ input:focus,select:focus{outline:2px solid var(--green2); outline-offset:1px; bo
 .entryrow{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-top:1px dashed var(--line)}
 .entryrow:first-of-type{border-top:0}
 .delbtn{background:transparent; border:1.5px solid var(--line); color:var(--danger); border-radius:999px; padding:6px 12px; font-weight:700; font-size:13px; min-height:38px}
+.edbtn{background:transparent; border:1.5px solid var(--line); color:var(--ink); border-radius:999px; padding:6px 12px; font-weight:700; font-size:13px; min-height:38px}
+.entrybtns{display:flex; gap:6px; flex:none}
+.datenav{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px}
+.datenav button{width:40px; height:40px; flex:none; border-radius:50%; border:1.5px solid var(--line); background:var(--card); font-size:20px; line-height:1; cursor:pointer; color:var(--ink)}
+.datelabel{font-weight:700; text-transform:capitalize; text-align:center; cursor:pointer}
+.mealchips{display:flex; gap:8px; flex-wrap:wrap}
+.mealchips button{padding:8px 14px; border-radius:999px; border:1.5px solid var(--line); background:var(--card); font-weight:600; cursor:pointer; color:var(--ink); min-height:40px}
+.mealchips button.on{background:var(--green); border-color:var(--green); color:#FBF7EC}
+.mealblock{padding:12px 0 2px; border-top:1px dashed var(--line)}
+.mealblock:first-of-type{border-top:0; padding-top:2px}
+.mealblock-head{display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:2px}
+.mealblock-head b{font-family:"Fraunces",serif; font-size:17px; font-weight:900}
+.mealblock-head span{font-size:12px; color:var(--ink2)}
 .empty{color:var(--ink2); font-size:14.5px; text-align:center; padding:14px 6px}
 
 /* ---------- Calculator ---------- */
@@ -377,6 +390,7 @@ table.calc td:first-child{font-weight:600}
     <p class="lede" data-i18n="reg_lede">Anota en gramos o en puñados — la app convierte — y mira tu día contra las metas de TU plan. Todo queda en este dispositivo.</p>
     <div class="card" style="margin-bottom:14px">
       <h3 class="serif" style="font-size:20px; font-weight:900; margin-bottom:12px" data-i18n="reg_progress_h">Tu día contra tu plan</h3>
+      <div class="datenav"><button type="button" id="date-prev" aria-label="←">‹</button><div class="datelabel" id="date-label"></div><button type="button" id="date-next" aria-label="→">›</button></div>
       <div id="reg-progress"></div>
     </div>
     <div class="card" style="margin-bottom:14px">
@@ -387,6 +401,15 @@ table.calc td:first-child{font-weight:600}
       <div id="food-list"></div>
       <div id="add-panel" style="display:none; border-top:1.5px solid var(--line); margin-top:12px; padding-top:14px">
         <div style="font-weight:700; margin-bottom:10px"><span data-i18n="reg_selected">Seleccionado:</span> <span id="add-food-name"></span></div>
+        <div class="field" style="margin-bottom:10px">
+          <label class="flabel" data-i18n="reg_meal">Comida</label>
+          <div class="mealchips" id="meal-chips">
+            <button type="button" data-meal="desayuno">Desayuno</button>
+            <button type="button" data-meal="almuerzo">Almuerzo</button>
+            <button type="button" data-meal="merienda">Merienda</button>
+            <button type="button" data-meal="cena">Cena</button>
+          </div>
+        </div>
         <div class="two">
           <div class="field" style="margin-bottom:10px">
             <label class="flabel" for="add-qty" data-i18n="reg_qty">Cantidad</label>
@@ -402,6 +425,7 @@ table.calc td:first-child{font-weight:600}
         </div>
         <div style="font-size:13.5px; color:var(--ink2); margin-bottom:12px" id="add-preview"></div>
         <button type="button" class="addbtn" id="add-confirm" style="width:100%; min-height:48px" data-i18n="reg_add_btn">Añadir al día</button>
+        <button type="button" class="edbtn" id="add-cancel" style="display:none; width:100%; margin-top:8px" data-i18n="reg_cancel">Cancelar</button>
       </div>
     </div>
     <div class="card">
@@ -589,6 +613,8 @@ es:{
  reg_grams:"Gramos", reg_handfuls:"Puñados", reg_handfuls_one:"puñado", reg_add_btn:"Añadir al día",
  reg_entries_h:"Comidas anotadas", reg_empty:"Todavía no anotaste nada hoy. Busca un alimento arriba y añade tu primera comida.",
  reg_add:"Añadir", reg_remove:"Quitar", reg_of:"de",
+ reg_meal:"Comida", reg_save_btn:"Guardar cambios", reg_cancel:"Cancelar", reg_edit:"Editar",
+ reg_today:"Hoy", reg_empty_meal:"Sin anotaciones",
  reg_preview:"= %G g · %K kcal · P %P g · C %C g · G %F g",
  per100:"por 100 g",
  calc_kicker:"Juega con los números", calc_h:"Calculadora",
@@ -662,6 +688,8 @@ en:{
  reg_grams:"Grams", reg_handfuls:"Handfuls", reg_handfuls_one:"handful", reg_add_btn:"Add to today",
  reg_entries_h:"Logged meals", reg_empty:"You haven't logged anything today yet. Search for a food above and add your first meal.",
  reg_add:"Add", reg_remove:"Remove", reg_of:"of",
+ reg_meal:"Meal", reg_save_btn:"Save changes", reg_cancel:"Cancel", reg_edit:"Edit",
+ reg_today:"Today", reg_empty_meal:"Nothing logged yet",
  reg_preview:"= %G g · %K kcal · P %P g · C %C g · F %F g",
  per100:"per 100 g",
  calc_kicker:"Play with the numbers", calc_h:"Calculator",
@@ -677,15 +705,39 @@ en:{
  kcal_word:"kcal"
 }};
 
-/* ================= State (in-memory only) ================= */
+/* ================= State (persisted on this device only) ================= */
 var state = {
  lang:"es",
  profile:{ age:47, sex:"M", height:178, weight:92, goalWeight:84, goal:"lose", activity:"weights", avoids:{} },
  variants:[0,0,0,0],
- entries:[],           /* {foodId, grams} */
- selFood:null, selUnit:"handful",
+ log:{},               /* { "YYYY-MM-DD": [{foodId, grams, meal}] } */
+ viewDate:null,        /* day shown in the diary; set at init */
+ selFood:null, selUnit:"handful", selMeal:null, editIdx:null,
  calcWeight:92, calcAdj:-150
 };
+var LS_KEY = "handful.v1";
+function dStr(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function todayStr(){ return dStr(new Date()); }
+function shiftDate(str, days){ var p = str.split("-"); var d = new Date(+p[0], +p[1]-1, +p[2]); d.setDate(d.getDate()+days); return dStr(d); }
+function defaultMeal(){ var h = new Date().getHours(); return h < 11 ? "desayuno" : (h < 15 ? "almuerzo" : (h < 18 ? "merienda" : "cena")); }
+function save(){
+ try { localStorage.setItem(LS_KEY, JSON.stringify({ lang:state.lang, profile:state.profile, variants:state.variants, log:state.log })); } catch(e){}
+}
+function load(){
+ try {
+   var raw = localStorage.getItem(LS_KEY); if (!raw) return;
+   var s = JSON.parse(raw); if (!s) return;
+   if (s.lang) state.lang = s.lang;
+   if (s.profile) state.profile = s.profile;
+   if (s.variants) state.variants = s.variants;
+   if (s.log) state.log = s.log;
+ } catch(e){}
+}
+function dayEntries(){ return state.log[state.viewDate] || []; }
+function setDayEntries(list){ if (list.length) state.log[state.viewDate] = list; else delete state.log[state.viewDate]; }
+load();
+state.viewDate = todayStr();
+state.selMeal = defaultMeal();
 var ACTF = { sedentary:1.2, weights:1.45, active:1.65 };
 
 function t(k){ return (I18N[state.lang] && I18N[state.lang][k]) || I18N.es[k] || k; }
@@ -899,14 +951,22 @@ function renderGuide(){
  });
  $("guide-cards").innerHTML = cards.join("");
 }
-function entryTotals(){
+function entryTotals(list){
  var tot = { kcal:0, p:0, c:0, f:0 };
- state.entries.forEach(function(e){ var m = macrosOf(FOOD[e.foodId], e.grams); tot.kcal+=m.kcal; tot.p+=m.p; tot.c+=m.c; tot.f+=m.f; });
+ (list || []).forEach(function(e){ var m = macrosOf(FOOD[e.foodId], e.grams); tot.kcal+=m.kcal; tot.p+=m.p; tot.c+=m.c; tot.f+=m.f; });
  return tot;
+}
+function syncMealChips(){
+ document.querySelectorAll("#meal-chips button").forEach(function(b){
+   var id = b.getAttribute("data-meal");
+   b.textContent = t("meal_"+id);
+   b.classList.toggle("on", state.selMeal === id);
+ });
 }
 function renderTracker(){
  var n = compute(state.profile);
- var tot = entryTotals();
+ var entries = dayEntries();
+ var tot = entryTotals(entries);
  var rows = [
    { lab: t("n_target"), cur: tot.kcal, goal: n.target, unit:"kcal", cls:"" },
    { lab: t("m_protein"), cur: tot.p, goal: n.protein, unit:"g", cls:"" },
@@ -919,19 +979,34 @@ function renderTracker(){
    return '<div class="progressrow"><div class="prow-top"><b>'+r.lab+'</b><span>'+fmt(r.cur)+' '+t("reg_of")+' '+fmt(r.goal)+' '+r.unit+'</span></div>'+
      '<div class="pbar"><i class="'+(over ? "over" : r.cls)+'" style="width:'+pct+'%"></i></div></div>';
  }).join("");
- renderFoodList();
- if (!state.entries.length){
-   $("reg-entries").innerHTML = '<p class="empty">'+t("reg_empty")+'</p>';
- } else {
-   $("reg-entries").innerHTML = state.entries.map(function(e, i){
-     var f = FOOD[e.foodId], m = macrosOf(f, e.grams);
+ var dp = state.viewDate.split("-");
+ var dlabel = new Date(+dp[0], +dp[1]-1, +dp[2]).toLocaleDateString(state.lang==="en" ? "en-US" : "es-ES", { weekday:"short", day:"numeric", month:"short" });
+ $("date-label").innerHTML = dlabel + (state.viewDate === todayStr() ? ' · <b>'+t("reg_today")+'</b>' : '');
+ var mts = mealTargets(n);
+ $("reg-entries").innerHTML = MEALS.map(function(meal, mi){
+   var mt = mts[mi];
+   var mEntries = [];
+   entries.forEach(function(e, gi){ if ((e.meal || "desayuno") === meal.id) mEntries.push({ e:e, gi:gi }); });
+   var sub = entryTotals(mEntries.map(function(x){ return x.e; }));
+   var head = '<div class="mealblock"><div class="mealblock-head"><b>'+t("meal_"+meal.id)+'</b>'+
+     '<span>'+fmt(sub.kcal)+' kcal · P '+fmt(sub.p)+' '+t("reg_of")+' '+fmt(mt.protein)+' g · C '+fmt(sub.c)+' '+t("reg_of")+' '+fmt(mt.carbs)+' g · G '+fmt(sub.f)+' '+t("reg_of")+' '+fmt(mt.fat)+' g</span></div>';
+   if (!mEntries.length) return head + '<p class="empty" style="margin:2px 0 6px">'+t("reg_empty_meal")+'</p></div>';
+   var rowsHtml = mEntries.map(function(x){
+     var e = x.e, f = FOOD[e.foodId], m = macrosOf(f, e.grams);
      var hf = e.grams/30;
      var hfWord = (Math.abs(hf-1) < 0.05) ? t("reg_handfuls_one") : t("reg_handfuls").toLowerCase();
-     var amount = fmt(e.grams)+" g" + (hf >= 0.5 ? " · ≈ "+fmt1(hf)+" "+hfWord : "");
+     var unit = unitText(f, e.grams);
+     var amount = unit ? unit+' · '+fmt(e.grams)+' g' : fmt(e.grams)+' g'+(hf >= 0.5 ? ' · ≈ '+fmt1(hf)+' '+hfWord : '');
      return '<div class="entryrow"><div><b>'+fname(f)+'</b><div style="font-size:12.5px; color:var(--ink2)">'+amount+' · '+fmt(m.kcal)+' kcal · P '+fmt(m.p)+' · C '+fmt(m.c)+' · G '+fmt(m.f)+'</div></div>'+
-       '<button type="button" class="delbtn" data-del="'+i+'">'+t("reg_remove")+'</button></div>';
+       '<span class="entrybtns"><button type="button" class="edbtn" data-edit="'+x.gi+'">'+t("reg_edit")+'</button>'+
+       '<button type="button" class="delbtn" data-del="'+x.gi+'">'+t("reg_remove")+'</button></span></div>';
    }).join("");
- }
+   return head + rowsHtml + '</div>';
+ }).join("");
+ renderFoodList();
+ syncMealChips();
+ $("add-confirm").textContent = state.editIdx != null ? t("reg_save_btn") : t("reg_add_btn");
+ $("add-cancel").style.display = state.editIdx != null ? "block" : "none";
  updateAddPreview();
 }
 function renderFoodList(){
@@ -951,6 +1026,7 @@ function addGrams(){
  return state.selUnit==="handful" ? qty*30 : qty;
 }
 function updateAddPreview(){
+ syncMealChips();
  if (!state.selFood) return;
  var f = FOOD[state.selFood], g = addGrams(), m = macrosOf(f, g);
  $("add-preview").textContent = t("reg_preview").replace("%G", fmt(g)).replace("%K", fmt(m.kcal)).replace("%P", fmt(m.p)).replace("%C", fmt(m.c)).replace("%F", fmt(m.f));
@@ -972,7 +1048,7 @@ function renderCalc(){
  }).join("");
  $("calc-table").innerHTML = rows;
 }
-function renderAll(){ applyI18n(); renderAvoidChips(); renderNumbers(); renderPlan(); renderGuide(); renderTracker(); renderCalc(); }
+function renderAll(){ applyI18n(); renderAvoidChips(); renderNumbers(); renderPlan(); renderGuide(); renderTracker(); renderCalc(); save(); }
 
 /* ================= Events ================= */
 function syncFormFromProfile(){
@@ -982,7 +1058,7 @@ function syncFormFromProfile(){
  document.querySelectorAll("#seg-goal button").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-goal")===p.goal); });
  document.querySelectorAll("#seg-activity button").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-act")===p.activity); });
 }
-function refreshDerived(){ renderNumbers(); renderPlan(); renderGuide(); renderTracker(); }
+function refreshDerived(){ renderNumbers(); renderPlan(); renderGuide(); renderTracker(); save(); }
 ["f-age","f-height","f-weight","f-goalweight"].forEach(function(id){
  $(id).addEventListener("input", function(){
    var v = parseFloat(this.value); if (isNaN(v)) return;
@@ -1009,13 +1085,13 @@ $("avoid-chips").addEventListener("click", function(e){
  var b = e.target.closest("button"); if (!b) return;
  var id = b.getAttribute("data-avoid");
  if (state.profile.avoids[id]) delete state.profile.avoids[id]; else state.profile.avoids[id] = true;
- renderAvoidChips(); renderPlan(); renderGuide();
+ renderAvoidChips(); renderPlan(); renderGuide(); save();
 });
 $("plan-meals").addEventListener("click", function(e){
  var b = e.target.closest("[data-variant]"); if (!b) return;
  var i = parseInt(b.getAttribute("data-variant"), 10);
  state.variants[i] = (state.variants[i] + 1) % 3;
- renderPlan(); renderGuide();
+ renderPlan(); renderGuide(); save();
 });
 $("tabnav").addEventListener("click", function(e){
  var b = e.target.closest("button"); if (!b) return;
@@ -1042,13 +1118,43 @@ $("add-qty").addEventListener("input", updateAddPreview);
 $("add-confirm").addEventListener("click", function(){
  if (!state.selFood) return;
  var g = addGrams(); if (g <= 0) return;
- state.entries.push({ foodId: state.selFood, grams: g });
- renderTracker();
+ var list = dayEntries().slice();
+ var rec = { foodId: state.selFood, grams: g, meal: state.selMeal || defaultMeal() };
+ if (state.editIdx != null && list[state.editIdx]) list[state.editIdx] = rec; else list.push(rec);
+ setDayEntries(list);
+ state.editIdx = null;
+ save(); renderTracker();
 });
+$("add-cancel").addEventListener("click", function(){ state.editIdx = null; renderTracker(); });
+$("meal-chips").addEventListener("click", function(e){
+ var b = e.target.closest("[data-meal]"); if (!b) return;
+ state.selMeal = b.getAttribute("data-meal");
+ syncMealChips();
+});
+$("date-prev").addEventListener("click", function(){ state.viewDate = shiftDate(state.viewDate, -1); state.editIdx = null; renderTracker(); });
+$("date-next").addEventListener("click", function(){ state.viewDate = shiftDate(state.viewDate, 1); state.editIdx = null; renderTracker(); });
+$("date-label").addEventListener("click", function(){ state.viewDate = todayStr(); state.editIdx = null; renderTracker(); });
 $("reg-entries").addEventListener("click", function(e){
+ var ed = e.target.closest("[data-edit]");
+ if (ed){
+   var idx = parseInt(ed.getAttribute("data-edit"), 10);
+   var rec = dayEntries()[idx]; if (!rec) return;
+   state.editIdx = idx;
+   state.selFood = rec.foodId;
+   state.selMeal = rec.meal || "desayuno";
+   $("add-food-name").textContent = fname(FOOD[rec.foodId]);
+   $("add-panel").style.display = "block";
+   if (state.selUnit==="handful"){ $("add-qty").value = Math.round(rec.grams/30*10)/10; } else { $("add-qty").value = rec.grams; }
+   renderTracker();
+   $("add-panel").scrollIntoView({ behavior:"smooth", block:"nearest" });
+   return;
+ }
  var b = e.target.closest("[data-del]"); if (!b) return;
- state.entries.splice(parseInt(b.getAttribute("data-del"), 10), 1);
- renderTracker();
+ var list = dayEntries().slice();
+ list.splice(parseInt(b.getAttribute("data-del"), 10), 1);
+ setDayEntries(list);
+ state.editIdx = null;
+ save(); renderTracker();
 });
 function syncAdjSeg(){
  document.querySelectorAll("#seg-adj button").forEach(function(b){ b.classList.toggle("on", parseInt(b.getAttribute("data-adj"),10)===state.calcAdj); });

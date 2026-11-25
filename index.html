@@ -202,6 +202,21 @@ input:focus,select:focus{outline:2px solid var(--green2); outline-offset:1px; bo
 .mealblock-head span{font-size:12px; color:var(--ink2)}
 .empty{color:var(--ink2); font-size:14.5px; text-align:center; padding:14px 6px}
 
+/* ---------- Scanner ---------- */
+.scanrow{display:flex; gap:8px; margin-top:12px}
+.scanbtn{
+  flex:1; background:var(--card2); border:1.5px solid var(--green); color:var(--green);
+  border-radius:12px; font-weight:700; font-size:15px; padding:10px 12px; min-height:48px;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+}
+@media (prefers-color-scheme: dark){ .scanbtn{color:var(--amber-soft); border-color:var(--amber-soft)} }
+.scanbtn:active{transform:scale(.98)}
+.scanpanel{border-top:1.5px solid var(--line); margin-top:12px; padding-top:14px}
+.scanvideo{width:100%; border-radius:12px; background:#000; max-height:320px; object-fit:cover}
+.scanmsg{background:var(--card2); border-radius:10px; padding:10px 12px; font-size:14px; margin:10px 0}
+.srcnote{font-size:12.5px; color:var(--ink2); margin-top:8px}
+.scanmac{font-size:13.5px; color:var(--ink2); margin:2px 0 4px}
+
 /* ---------- Calculator ---------- */
 input[type="range"]{width:100%; accent-color:var(--green); min-height:44px}
 table.calc{width:100%; border-collapse:collapse; font-size:15px}
@@ -399,6 +414,88 @@ table.calc td:first-child{font-weight:600}
         <input type="search" id="food-search" data-i18n-ph="reg_search_ph" placeholder="Busca un alimento… (arroz, pollo, yuca…)" />
       </div>
       <div id="food-list"></div>
+      <div class="scanrow">
+        <button type="button" class="scanbtn" id="scan-open"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M7 8v8M10.5 8v8M14 8v8M17.5 8v8"/></svg><span data-i18n="scan_btn">Escanear código</span></button>
+      </div>
+      <div id="scan-panel" class="scanpanel" style="display:none">
+        <div id="scan-cam-wrap" style="display:none">
+          <video id="scan-video" class="scanvideo" playsinline muted></video>
+          <p class="srcnote" data-i18n="scan_cam_hint">Apunta la cámara al código de barras del paquete. La lectura ocurre en tu teléfono: ninguna foto se guarda ni se envía.</p>
+          <button type="button" class="edbtn" id="scan-stop" style="width:100%; margin-top:8px" data-i18n="scan_stop">Detener cámara</button>
+        </div>
+        <button type="button" class="scanbtn" id="scan-cam-start" style="width:100%"><span data-i18n="scan_cam_start">Usar la cámara</span></button>
+        <div class="field" style="margin-top:12px; margin-bottom:6px">
+          <label class="flabel" for="scan-code" data-i18n="scan_code_lab">O escribe el número del código</label>
+          <div style="display:flex; gap:8px">
+            <input type="text" id="scan-code" inputmode="numeric" autocomplete="off" style="flex:1" />
+            <button type="button" class="addbtn" id="scan-lookup" data-i18n="scan_lookup">Buscar</button>
+          </div>
+        </div>
+        <div id="scan-msg"></div>
+        <div id="scan-result" style="display:none">
+          <div style="font-weight:700; margin-top:6px"><span id="scan-prod-name"></span></div>
+          <div class="scanmac" id="scan-prod-mac"></div>
+          <div class="srcnote" id="scan-prod-src" style="margin:0 0 10px"></div>
+          <div class="field" style="margin-bottom:10px">
+            <label class="flabel" data-i18n="reg_meal">Comida</label>
+            <div class="mealchips" id="scan-meal-chips">
+              <button type="button" data-smeal="desayuno">Desayuno</button>
+              <button type="button" data-smeal="almuerzo">Almuerzo</button>
+              <button type="button" data-smeal="merienda">Merienda</button>
+              <button type="button" data-smeal="cena">Cena</button>
+            </div>
+          </div>
+          <div class="two">
+            <div class="field" style="margin-bottom:10px">
+              <label class="flabel" for="scan-qty" data-i18n="reg_qty">Cantidad</label>
+              <input type="number" id="scan-qty" min="0" step="any" inputmode="decimal" value="1" />
+            </div>
+            <div class="field" style="margin-bottom:10px">
+              <label class="flabel" data-i18n="reg_unit">Unidad</label>
+              <div class="unitseg">
+                <button type="button" id="scan-unit-g" data-i18n="reg_grams">Gramos</button>
+                <button type="button" id="scan-unit-s" style="display:none"></button>
+                <button type="button" id="scan-unit-h" data-i18n="reg_handfuls">Puñados</button>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:13.5px; color:var(--ink2); margin-bottom:12px" id="scan-preview"></div>
+          <button type="button" class="addbtn" id="scan-confirm" style="width:100%; min-height:48px" data-i18n="reg_add_btn">Añadir al día</button>
+        </div>
+        <div id="scan-create" style="display:none">
+          <h4 class="serif" style="font-size:17px; font-weight:900; margin:8px 0" data-i18n="scan_create_h">Crea el alimento con este código</h4>
+          <div class="field" style="margin-bottom:10px">
+            <label class="flabel" for="scan-new-name" data-i18n="scan_name_lab">Nombre del producto</label>
+            <input type="text" id="scan-new-name" autocomplete="off" />
+          </div>
+          <div class="two">
+            <div class="field" style="margin-bottom:10px">
+              <label class="flabel" for="scan-new-kcal" data-i18n="scan_kcal_lab">Calorías por 100 g</label>
+              <input type="number" id="scan-new-kcal" min="0" step="any" inputmode="decimal" />
+            </div>
+            <div class="field" style="margin-bottom:10px">
+              <label class="flabel" for="scan-new-serving" data-i18n="scan_serving_lab">Porción del paquete (g, opcional)</label>
+              <input type="number" id="scan-new-serving" min="0" step="any" inputmode="decimal" />
+            </div>
+          </div>
+          <div class="two">
+            <div class="field" style="margin-bottom:10px">
+              <label class="flabel" for="scan-new-p"><span data-i18n="m_protein">Proteína</span> (<span data-i18n="per100">por 100 g</span>)</label>
+              <input type="number" id="scan-new-p" min="0" step="any" inputmode="decimal" />
+            </div>
+            <div class="field" style="margin-bottom:10px">
+              <label class="flabel" for="scan-new-c"><span data-i18n="m_carbs">Carbohidratos</span> (<span data-i18n="per100">por 100 g</span>)</label>
+              <input type="number" id="scan-new-c" min="0" step="any" inputmode="decimal" />
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label class="flabel" for="scan-new-f"><span data-i18n="m_fat">Grasa</span> (<span data-i18n="per100">por 100 g</span>)</label>
+            <input type="number" id="scan-new-f" min="0" step="any" inputmode="decimal" />
+          </div>
+          <button type="button" class="addbtn" id="scan-create-btn" style="width:100%; min-height:48px" data-i18n="scan_create_btn">Guardar y usar</button>
+        </div>
+        <p class="srcnote" data-i18n="scan_privacy_note">Al buscar, solo sale el número del código hacia Open Food Facts. Tu perfil, tu plan y tu diario nunca salen de este dispositivo, y el producto queda guardado aquí para funcionar sin conexión.</p>
+      </div>
       <div id="add-panel" style="display:none; border-top:1.5px solid var(--line); margin-top:12px; padding-top:14px">
         <div style="font-weight:700; margin-bottom:10px"><span data-i18n="reg_selected">Seleccionado:</span> <span id="add-food-name"></span></div>
         <div class="field" style="margin-bottom:10px">
@@ -617,6 +714,31 @@ es:{
  reg_today:"Hoy", reg_empty_meal:"Sin anotaciones",
  reg_preview:"= %G g · %K kcal · P %P g · C %C g · G %F g",
  per100:"por 100 g",
+ scan_btn:"Escanear código",
+ scan_cam_start:"Usar la cámara",
+ scan_cam_hint:"Apunta la cámara al código de barras del paquete. La lectura ocurre en tu teléfono: ninguna foto se guarda ni se envía.",
+ scan_stop:"Detener cámara",
+ scan_code_lab:"O escribe el número del código",
+ scan_lookup:"Buscar",
+ scan_searching:"Buscando el producto…",
+ scan_invalid:"Ese número no parece un código de barras válido (8 a 14 dígitos). Revísalo e inténtalo de nuevo.",
+ scan_notfound:"Open Food Facts no tiene ese código todavía. Puedes crear el alimento a mano con este código: queda guardado en tu dispositivo para la próxima vez. O cierra el escáner y regístralo por puñados como siempre.",
+ scan_offline:"No se pudo buscar (¿sin conexión?). Si ya escaneaste este producto antes, está guardado y aparece en la lista. También puedes crearlo a mano con este código, o registrarlo por puñados como siempre.",
+ scan_nocam:"Este navegador no puede leer códigos con la cámara. Escribe el número del código abajo: funciona igual.",
+ scan_cam_denied:"No se pudo abrir la cámara. Escribe el número del código abajo: funciona igual.",
+ scan_source_off:"Fuente: Open Food Facts (datos de sus colaboradores, licencia Open Database License)",
+ scan_source_manual:"Creado por ti en este dispositivo",
+ scan_from_cache:"Guardado en este dispositivo (sin conexión)",
+ scan_serving_btn:"Porción (%G g)",
+ scan_recent:"Escaneado",
+ scan_added:"Añadido a tu día.",
+ scan_create_h:"Crea el alimento con este código",
+ scan_name_lab:"Nombre del producto",
+ scan_kcal_lab:"Calorías por 100 g",
+ scan_serving_lab:"Porción del paquete (g, opcional)",
+ scan_create_btn:"Guardar y usar",
+ scan_create_invalid:"Pon al menos el nombre y las calorías por 100 g, tal como vienen en la etiqueta.",
+ scan_privacy_note:"Al buscar, solo sale el número del código hacia Open Food Facts. Tu perfil, tu plan y tu diario nunca salen de este dispositivo, y el producto queda guardado aquí para funcionar sin conexión.",
  calc_kicker:"Juega con los números", calc_h:"Calculadora",
  calc_lede:"Mueve el peso y el ajuste y mira cómo cambian tus números, tus macros y los gramos de cada alimento — en vivo.",
  calc_weight:"Peso", calc_adj:"Ajuste de calorías",
@@ -692,6 +814,31 @@ en:{
  reg_today:"Today", reg_empty_meal:"Nothing logged yet",
  reg_preview:"= %G g · %K kcal · P %P g · C %C g · F %F g",
  per100:"per 100 g",
+ scan_btn:"Scan barcode",
+ scan_cam_start:"Use the camera",
+ scan_cam_hint:"Point the camera at the barcode on the package. Reading happens on your phone: no photo is saved or sent.",
+ scan_stop:"Stop camera",
+ scan_code_lab:"Or type the barcode number",
+ scan_lookup:"Look up",
+ scan_searching:"Looking up the product…",
+ scan_invalid:"That number doesn't look like a valid barcode (8 to 14 digits). Check it and try again.",
+ scan_notfound:"Open Food Facts doesn't have that code yet. You can create the food by hand with this code: it stays saved on your device for next time. Or close the scanner and log it in handfuls as usual.",
+ scan_offline:"The lookup failed (no connection?). If you scanned this product before, it is saved and shows in the list. You can also create it by hand with this code, or log it in handfuls as usual.",
+ scan_nocam:"This browser can't read barcodes with the camera. Type the barcode number below: it works the same.",
+ scan_cam_denied:"The camera couldn't be opened. Type the barcode number below: it works the same.",
+ scan_source_off:"Source: Open Food Facts (data by its contributors, Open Database License)",
+ scan_source_manual:"Created by you on this device",
+ scan_from_cache:"Saved on this device (offline)",
+ scan_serving_btn:"Serving (%G g)",
+ scan_recent:"Scanned",
+ scan_added:"Added to your day.",
+ scan_create_h:"Create the food with this code",
+ scan_name_lab:"Product name",
+ scan_kcal_lab:"Calories per 100 g",
+ scan_serving_lab:"Package serving (g, optional)",
+ scan_create_btn:"Save and use",
+ scan_create_invalid:"Enter at least the name and the calories per 100 g, just as they appear on the label.",
+ scan_privacy_note:"A lookup sends only the barcode number to Open Food Facts. Your profile, plan and diary never leave this device, and the product stays saved here so it works offline.",
  calc_kicker:"Play with the numbers", calc_h:"Calculator",
  calc_lede:"Move the weight and the adjustment and watch your numbers, your macros and each food's grams change — live.",
  calc_weight:"Weight", calc_adj:"Calorie adjustment",
@@ -711,6 +858,8 @@ var state = {
  profile:{ age:47, sex:"M", height:178, weight:92, goalWeight:84, goal:"lose", activity:"weights", avoids:{} },
  variants:[0,0,0,0],
  log:{},               /* { "YYYY-MM-DD": [{foodId, grams, meal}] } */
+ products:{},          /* scanned/created products by barcode: { code: {code,name,kcal,p,c,f,serving,source,ts} } */
+ scanMeal:null, scanProduct:null, scanUnit:"gram", scanCode:null,
  viewDate:null,        /* day shown in the diary; set at init */
  selFood:null, selUnit:"handful", selMeal:null, editIdx:null,
  calcWeight:92, calcAdj:-150
@@ -721,7 +870,7 @@ function todayStr(){ return dStr(new Date()); }
 function shiftDate(str, days){ var p = str.split("-"); var d = new Date(+p[0], +p[1]-1, +p[2]); d.setDate(d.getDate()+days); return dStr(d); }
 function defaultMeal(){ var h = new Date().getHours(); return h < 11 ? "desayuno" : (h < 15 ? "almuerzo" : (h < 18 ? "merienda" : "cena")); }
 function save(){
- try { localStorage.setItem(LS_KEY, JSON.stringify({ lang:state.lang, profile:state.profile, variants:state.variants, log:state.log })); } catch(e){}
+ try { localStorage.setItem(LS_KEY, JSON.stringify({ lang:state.lang, profile:state.profile, variants:state.variants, log:state.log, products:state.products })); } catch(e){}
 }
 function load(){
  try {
@@ -731,11 +880,13 @@ function load(){
    if (s.profile) state.profile = s.profile;
    if (s.variants) state.variants = s.variants;
    if (s.log) state.log = s.log;
+   if (s.products) state.products = s.products;
  } catch(e){}
 }
 function dayEntries(){ return state.log[state.viewDate] || []; }
 function setDayEntries(list){ if (list.length) state.log[state.viewDate] = list; else delete state.log[state.viewDate]; }
 load();
+Object.keys(state.products).forEach(function(code){ registerProduct(state.products[code]); });
 state.viewDate = todayStr();
 state.selMeal = defaultMeal();
 var ACTF = { sedentary:1.2, weights:1.45, active:1.65 };
@@ -1009,17 +1160,29 @@ function renderTracker(){
  $("add-cancel").style.display = state.editIdx != null ? "block" : "none";
  updateAddPreview();
 }
+function foodPickHtml(f, scanned){
+ var src = "";
+ if (scanned){
+   var prod = state.products[f.code];
+   src = ' · '+t("scan_recent")+' · '+(prod && prod.source==="off" ? "Open Food Facts" : t("scan_source_manual"));
+ }
+ return '<div class="foodpick"><div><span class="fp-name">'+fname(f)+'</span>'+
+   '<div class="fp-mac">'+fmt(f.kcal)+' kcal · P '+fmt1(f.p)+' · C '+fmt1(f.c)+' · G '+fmt1(f.f)+' — '+t("per100")+src+'</div></div>'+
+   '<button type="button" class="addbtn" data-pick="'+f.id+'">'+t("reg_add")+'</button></div>';
+}
 function renderFoodList(){
  var q = ($("food-search").value || "").toLowerCase().trim();
+ var scans = scanFoodList().filter(function(f){
+   if (!q) return true;
+   return f.es.toLowerCase().indexOf(q) >= 0 || f.en.toLowerCase().indexOf(q) >= 0;
+ });
  var list = FOODS.filter(function(f){
    if (!q) return true;
    return f.es.toLowerCase().indexOf(q) >= 0 || f.en.toLowerCase().indexOf(q) >= 0;
  });
- $("food-list").innerHTML = list.map(function(f){
-   return '<div class="foodpick"><div><span class="fp-name">'+fname(f)+'</span>'+
-     '<div class="fp-mac">'+fmt(f.kcal)+' kcal · P '+fmt1(f.p)+' · C '+fmt1(f.c)+' · G '+fmt1(f.f)+' — '+t("per100")+'</div></div>'+
-     '<button type="button" class="addbtn" data-pick="'+f.id+'">'+t("reg_add")+'</button></div>';
- }).join("") || '<p class="empty">—</p>';
+ $("food-list").innerHTML =
+   scans.map(function(f){ return foodPickHtml(f, true); }).join("") +
+   list.map(function(f){ return foodPickHtml(f, false); }).join("") || '<p class="empty">—</p>';
 }
 function addGrams(){
  var qty = parseFloat($("add-qty").value) || 0;
@@ -1164,6 +1327,228 @@ $("seg-adj").addEventListener("click", function(e){
  var b = e.target.closest("button"); if (!b) return;
  state.calcAdj = parseInt(b.getAttribute("data-adj"), 10);
  syncAdjSeg(); renderCalc();
+});
+
+/* ================= Barcode scanner ================= */
+/* Reading happens on the device (BarcodeDetector over the live camera stream;
+   no photo is ever captured, stored or sent). The ONLY network call in the app
+   is the Open Food Facts lookup, and it sends nothing but the barcode number. */
+function normalizeBarcode(raw){
+ var d = String(raw == null ? "" : raw).replace(/[^0-9]/g, "");
+ return (d.length >= 8 && d.length <= 14) ? d : null;
+}
+function offNum(x){ var n = parseFloat(x); return isFinite(n) ? n : null; }
+function offParse(json, code){
+ if (!json || !json.product) return null;
+ if (!(json.status === 1 || json.status === "success")) return null;
+ var p = json.product, n = p.nutriments || {};
+ function per100(direct, servingKey){
+   var v = offNum(n[direct]);
+   if (v != null) return v;
+   var sv = offNum(n[servingKey]), sq = offNum(p.serving_quantity);
+   if (sv != null && sq != null && sq > 0) return sv/sq*100;
+   return null;
+ }
+ var kcal = per100("energy-kcal_100g", "energy-kcal_serving");
+ if (kcal == null){
+   var kj = per100("energy-kj_100g", "energy-kj_serving");
+   if (kj == null) kj = per100("energy_100g", "energy_serving"); /* OFF stores energy_100g in kJ */
+   if (kj != null) kcal = kj/4.184;
+ }
+ var name = p.product_name_es || p.product_name || p.product_name_en || "";
+ var prod = {
+   code: code,
+   name: String(name).trim(),
+   kcal: kcal,
+   p: per100("proteins_100g", "proteins_serving"),
+   c: per100("carbohydrates_100g", "carbohydrates_serving"),
+   f: per100("fat_100g", "fat_serving"),
+   serving: offNum(p.serving_quantity),
+   source: "off", ts: Date.now()
+ };
+ if (!prod.name || prod.kcal == null) return null;
+ prod.p = prod.p || 0; prod.c = prod.c || 0; prod.f = prod.f || 0;
+ if (!(prod.serving > 0)) prod.serving = null;
+ return prod;
+}
+function productFoodId(code){ return "scan:" + code; }
+function registerProduct(prod){
+ if (!prod || !prod.code) return;
+ FOOD[productFoodId(prod.code)] = { id: productFoodId(prod.code), es: prod.name, en: prod.name, kcal: prod.kcal, p: prod.p, c: prod.c, f: prod.f, type: "scan", code: prod.code };
+}
+function cachePut(prod){ state.products[prod.code] = prod; registerProduct(prod); save(); }
+function cacheGet(code){ return state.products[code] || null; }
+function scanFoodList(){
+ return Object.keys(state.products).map(function(code){ return state.products[code]; })
+   .sort(function(a, b){ return (b.ts || 0) - (a.ts || 0); })
+   .map(function(prod){ return FOOD[productFoodId(prod.code)]; })
+   .filter(function(f){ return !!f; });
+}
+function scanGramsFor(prod, qty, unit){
+ if (unit === "serving" && prod.serving) return qty * prod.serving;
+ if (unit === "handful") return qty * 30;
+ return qty;
+}
+var OFF_FIELDS = "product_name,product_name_es,product_name_en,nutriments,serving_quantity,serving_size";
+function offFetch(code){
+ return fetch("https://world.openfoodfacts.org/api/v3/product/" + encodeURIComponent(code) + ".json?fields=" + OFF_FIELDS, { headers: { "Accept": "application/json" } })
+   .then(function(r){ if (!r.ok) throw new Error("http " + r.status); return r.json(); });
+}
+/* Cache first: a cached code never touches the network. A 12-digit UPC-A that
+   OFF doesn't know is retried once with a leading 0 (its EAN-13 form). */
+function resolveBarcode(code, fetcher){
+ var hit = cacheGet(code);
+ if (hit) return Promise.resolve({ status: "cache", product: hit });
+ var f = fetcher || offFetch;
+ return f(code).then(function(json){
+   var prod = offParse(json, code);
+   if (prod){ cachePut(prod); return { status: "off", product: prod }; }
+   if (code.length === 12){
+     return f("0" + code).then(function(json2){
+       var prod2 = offParse(json2, code);
+       if (!prod2) return { status: "notfound" };
+       cachePut(prod2);
+       return { status: "off", product: prod2 };
+     });
+   }
+   return { status: "notfound" };
+ }).catch(function(){ return { status: "error" }; });
+}
+
+/* ---------- Scanner UI ---------- */
+var scanStream = null, scanTimer = null;
+function stopScanCamera(){
+ if (scanTimer){ clearInterval(scanTimer); scanTimer = null; }
+ if (scanStream){ scanStream.getTracks().forEach(function(tr){ tr.stop(); }); scanStream = null; }
+ var v = $("scan-video"); if (v) v.srcObject = null;
+ $("scan-cam-wrap").style.display = "none";
+ $("scan-cam-start").style.display = "block";
+}
+function scanMsg(html){ $("scan-msg").innerHTML = html ? '<div class="scanmsg">'+html+'</div>' : ""; }
+function syncScanMealChips(){
+ document.querySelectorAll("#scan-meal-chips button").forEach(function(b){
+   var id = b.getAttribute("data-smeal");
+   b.textContent = t("meal_"+id);
+   b.classList.toggle("on", state.scanMeal === id);
+ });
+}
+function showScanProduct(prod, origin){
+ state.scanProduct = prod;
+ state.scanUnit = prod.serving ? "serving" : "gram";
+ state.scanMeal = defaultMeal();
+ $("scan-prod-name").textContent = prod.name;
+ $("scan-prod-mac").textContent = fmt(prod.kcal)+" kcal · P "+fmt1(prod.p)+" · C "+fmt1(prod.c)+" · G "+fmt1(prod.f)+" — "+t("per100")+(prod.serving ? " · "+t("scan_serving_btn").replace("%G", fmt(prod.serving)) : "");
+ $("scan-prod-src").textContent = origin === "cache" ? t("scan_from_cache")+" · "+(prod.source === "off" ? t("scan_source_off") : t("scan_source_manual")) : (prod.source === "off" ? t("scan_source_off") : t("scan_source_manual"));
+ var sb = $("scan-unit-s");
+ sb.style.display = prod.serving ? "block" : "none";
+ sb.textContent = t("scan_serving_btn").replace("%G", fmt(prod.serving || 0));
+ $("scan-qty").value = state.scanUnit === "serving" ? 1 : 100;
+ $("scan-create").style.display = "none";
+ $("scan-result").style.display = "block";
+ scanMsg("");
+ updateScanPreview();
+}
+function updateScanPreview(){
+ var prod = state.scanProduct; if (!prod) return;
+ $("scan-unit-g").classList.toggle("on", state.scanUnit === "gram");
+ $("scan-unit-s").classList.toggle("on", state.scanUnit === "serving");
+ $("scan-unit-h").classList.toggle("on", state.scanUnit === "handful");
+ syncScanMealChips();
+ var qty = parseFloat($("scan-qty").value) || 0;
+ var g = scanGramsFor(prod, qty, state.scanUnit);
+ var m = macrosOf(FOOD[productFoodId(prod.code)], g);
+ $("scan-preview").textContent = t("reg_preview").replace("%G", fmt(g)).replace("%K", fmt(m.kcal)).replace("%P", fmt(m.p)).replace("%C", fmt(m.c)).replace("%F", fmt(m.f));
+}
+function showScanCreate(code){
+ state.scanCode = code;
+ $("scan-result").style.display = "none";
+ $("scan-create").style.display = "block";
+}
+function doScanLookup(raw){
+ var code = normalizeBarcode(raw);
+ if (!code){ scanMsg(t("scan_invalid")); return; }
+ $("scan-create").style.display = "none";
+ $("scan-result").style.display = "none";
+ scanMsg(t("scan_searching"));
+ resolveBarcode(code).then(function(res){
+   if (res.status === "cache" || res.status === "off"){ showScanProduct(res.product, res.status); renderFoodList(); }
+   else if (res.status === "notfound"){ scanMsg(t("scan_notfound")); showScanCreate(code); }
+   else { scanMsg(t("scan_offline")); showScanCreate(code); }
+ });
+}
+function startScanCamera(){
+ if (!("BarcodeDetector" in window) || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ scanMsg(t("scan_nocam")); return; }
+ var detector;
+ try { detector = new BarcodeDetector({ formats: ["ean_13", "ean_8", "upc_a", "upc_e"] }); }
+ catch(e){ scanMsg(t("scan_nocam")); return; }
+ navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false }).then(function(stream){
+   scanStream = stream;
+   var v = $("scan-video");
+   v.srcObject = stream;
+   $("scan-cam-wrap").style.display = "block";
+   $("scan-cam-start").style.display = "none";
+   return v.play();
+ }).then(function(){
+   scanTimer = setInterval(function(){
+     if (!scanStream) return;
+     detector.detect($("scan-video")).then(function(codes){
+       if (codes && codes.length && codes[0].rawValue){
+         var code = normalizeBarcode(codes[0].rawValue);
+         stopScanCamera();
+         if (code){ $("scan-code").value = code; doScanLookup(code); }
+         else scanMsg(t("scan_invalid"));
+       }
+     }).catch(function(){});
+   }, 350);
+ }).catch(function(){ scanMsg(t("scan_cam_denied")); });
+}
+$("scan-open").addEventListener("click", function(){
+ var panel = $("scan-panel");
+ var opening = panel.style.display === "none";
+ panel.style.display = opening ? "block" : "none";
+ if (!opening) stopScanCamera();
+});
+$("scan-cam-start").addEventListener("click", startScanCamera);
+$("scan-stop").addEventListener("click", stopScanCamera);
+$("scan-lookup").addEventListener("click", function(){ doScanLookup($("scan-code").value); });
+$("scan-code").addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); doScanLookup(this.value); } });
+$("scan-meal-chips").addEventListener("click", function(e){
+ var b = e.target.closest("[data-smeal]"); if (!b) return;
+ state.scanMeal = b.getAttribute("data-smeal");
+ syncScanMealChips();
+});
+$("scan-unit-g").addEventListener("click", function(){ state.scanUnit = "gram"; $("scan-qty").value = 100; updateScanPreview(); });
+$("scan-unit-s").addEventListener("click", function(){ state.scanUnit = "serving"; $("scan-qty").value = 1; updateScanPreview(); });
+$("scan-unit-h").addEventListener("click", function(){ state.scanUnit = "handful"; $("scan-qty").value = 1; updateScanPreview(); });
+$("scan-qty").addEventListener("input", updateScanPreview);
+$("scan-confirm").addEventListener("click", function(){
+ var prod = state.scanProduct; if (!prod) return;
+ var qty = parseFloat($("scan-qty").value) || 0; if (qty <= 0) return;
+ var g = scanGramsFor(prod, qty, state.scanUnit); if (g <= 0) return;
+ var list = dayEntries().slice();
+ list.push({ foodId: productFoodId(prod.code), grams: g, meal: state.scanMeal || defaultMeal() });
+ setDayEntries(list);
+ save(); renderTracker();
+ state.scanProduct = null;
+ $("scan-result").style.display = "none";
+ scanMsg(t("scan_added"));
+});
+$("scan-create-btn").addEventListener("click", function(){
+ var name = ($("scan-new-name").value || "").trim();
+ var kcal = parseFloat($("scan-new-kcal").value);
+ if (!state.scanCode || !name || isNaN(kcal) || kcal < 0){ scanMsg(t("scan_create_invalid")); return; }
+ var serving = parseFloat($("scan-new-serving").value);
+ var prod = {
+   code: state.scanCode, name: name, kcal: kcal,
+   p: parseFloat($("scan-new-p").value) || 0,
+   c: parseFloat($("scan-new-c").value) || 0,
+   f: parseFloat($("scan-new-f").value) || 0,
+   serving: (isFinite(serving) && serving > 0) ? serving : null,
+   source: "manual", ts: Date.now()
+ };
+ cachePut(prod);
+ renderFoodList();
+ showScanProduct(prod, "manual");
 });
 
 /* ================= Init ================= */

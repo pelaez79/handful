@@ -192,6 +192,10 @@ input:focus,select:focus{outline:2px solid var(--green2); outline-offset:1px; bo
 .datenav{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px}
 .datenav button{width:40px; height:40px; flex:none; border-radius:50%; border:1.5px solid var(--line); background:var(--card); font-size:20px; line-height:1; cursor:pointer; color:var(--ink)}
 .datelabel{font-weight:700; text-transform:capitalize; text-align:center; cursor:pointer}
+.copyrow{margin-bottom:10px}
+.copybtn{width:100%; background:transparent; border:1.5px solid var(--line); color:var(--ink); border-radius:12px; font-weight:700; font-size:14.5px; padding:10px 12px; min-height:44px; cursor:pointer}
+.copybtn:active{transform:scale(.99)}
+.copybtn.armed{border-color:var(--danger); color:var(--danger)}
 .mealchips{display:flex; gap:8px; flex-wrap:wrap}
 .mealchips button{padding:8px 14px; border-radius:999px; border:1.5px solid var(--line); background:var(--card); font-weight:600; cursor:pointer; color:var(--ink); min-height:40px}
 .mealchips button.on{background:var(--green); border-color:var(--green); color:#FBF7EC}
@@ -406,6 +410,8 @@ table.calc td:first-child{font-weight:600}
     <div class="card" style="margin-bottom:14px">
       <h3 class="serif" style="font-size:20px; font-weight:900; margin-bottom:12px" data-i18n="reg_progress_h">Tu día contra tu plan</h3>
       <div class="datenav"><button type="button" id="date-prev" aria-label="←">‹</button><div class="datelabel" id="date-label"></div><button type="button" id="date-next" aria-label="→">›</button></div>
+      <div class="copyrow"><button type="button" class="copybtn" id="copy-yday"></button></div>
+      <div id="copy-msg"></div>
       <div id="reg-progress"></div>
     </div>
     <div class="card" style="margin-bottom:14px">
@@ -712,6 +718,10 @@ es:{
  reg_add:"Añadir", reg_remove:"Quitar", reg_of:"de",
  reg_meal:"Comida", reg_save_btn:"Guardar cambios", reg_cancel:"Cancelar", reg_edit:"Editar",
  reg_today:"Hoy", reg_empty_meal:"Sin anotaciones",
+ copy_btn:"Copiar el día de ayer",
+ copy_confirm:"Este día ya tiene registros. Toca de nuevo para añadir también los de ayer",
+ copy_empty:"Ayer no tiene registros",
+ copy_done:"Listo: %N registro(s) de ayer añadidos a este día.",
  reg_preview:"= %G g · %K kcal · P %P g · C %C g · G %F g",
  per100:"por 100 g",
  scan_btn:"Escanear código",
@@ -812,6 +822,10 @@ en:{
  reg_add:"Add", reg_remove:"Remove", reg_of:"of",
  reg_meal:"Meal", reg_save_btn:"Save changes", reg_cancel:"Cancel", reg_edit:"Edit",
  reg_today:"Today", reg_empty_meal:"Nothing logged yet",
+ copy_btn:"Copy yesterday",
+ copy_confirm:"This day already has entries. Tap again to add yesterday's too",
+ copy_empty:"Yesterday has no entries",
+ copy_done:"Done: %N entry(ies) from yesterday added to this day.",
  reg_preview:"= %G g · %K kcal · P %P g · C %C g · F %F g",
  per100:"per 100 g",
  scan_btn:"Scan barcode",
@@ -861,7 +875,7 @@ var state = {
  products:{},          /* scanned/created products by barcode: { code: {code,name,kcal,p,c,f,serving,source,ts} } */
  scanMeal:null, scanProduct:null, scanUnit:"gram", scanCode:null,
  viewDate:null,        /* day shown in the diary; set at init */
- selFood:null, selUnit:"handful", selMeal:null, editIdx:null,
+ selFood:null, selUnit:"handful", selMeal:null, editIdx:null, copyArm:false,
  calcWeight:92, calcAdj:-150
 };
 var LS_KEY = "handful.v1";
@@ -885,6 +899,19 @@ function load(){
 }
 function dayEntries(){ return state.log[state.viewDate] || []; }
 function setDayEntries(list){ if (list.length) state.log[state.viewDate] = list; else delete state.log[state.viewDate]; }
+/* «Copiar el día de ayer»: copia exacta (comida, alimento, gramos) de las
+   entradas del día calendario anterior al día en vista, FUSIONANDO con lo
+   que ya tenga. Todo local; las entradas scan:<código> viajan igual porque
+   solo se copia la referencia. Devuelve {status:"empty"|"copied", count}. */
+function prevDayEntries(){ return state.log[shiftDate(state.viewDate, -1)] || []; }
+function copyYesterday(){
+ var src = prevDayEntries();
+ if (!src.length) return { status:"empty", count:0 };
+ var copies = src.map(function(e){ return { foodId:e.foodId, grams:e.grams, meal:e.meal }; });
+ setDayEntries(dayEntries().concat(copies));
+ save();
+ return { status:"copied", count:copies.length };
+}
 load();
 Object.keys(state.products).forEach(function(code){ registerProduct(state.products[code]); });
 state.viewDate = todayStr();
@@ -1114,6 +1141,15 @@ function syncMealChips(){
    b.classList.toggle("on", state.selMeal === id);
  });
 }
+function syncCopyBtn(){
+ var b = $("copy-yday"); if (!b) return;
+ b.textContent = state.copyArm ? t("copy_confirm") : t("copy_btn");
+ b.classList.toggle("armed", !!state.copyArm);
+}
+function showCopyMsg(txt){
+ var m = $("copy-msg"); if (!m) return;
+ m.innerHTML = txt ? '<div class="scanmsg">'+txt+'</div>' : "";
+}
 function renderTracker(){
  var n = compute(state.profile);
  var entries = dayEntries();
@@ -1156,6 +1192,7 @@ function renderTracker(){
  }).join("");
  renderFoodList();
  syncMealChips();
+ syncCopyBtn();
  $("add-confirm").textContent = state.editIdx != null ? t("reg_save_btn") : t("reg_add_btn");
  $("add-cancel").style.display = state.editIdx != null ? "block" : "none";
  updateAddPreview();
@@ -1294,9 +1331,26 @@ $("meal-chips").addEventListener("click", function(e){
  state.selMeal = b.getAttribute("data-meal");
  syncMealChips();
 });
-$("date-prev").addEventListener("click", function(){ state.viewDate = shiftDate(state.viewDate, -1); state.editIdx = null; renderTracker(); });
-$("date-next").addEventListener("click", function(){ state.viewDate = shiftDate(state.viewDate, 1); state.editIdx = null; renderTracker(); });
-$("date-label").addEventListener("click", function(){ state.viewDate = todayStr(); state.editIdx = null; renderTracker(); });
+$("date-prev").addEventListener("click", function(){ state.viewDate = shiftDate(state.viewDate, -1); state.editIdx = null; state.copyArm = false; showCopyMsg(""); renderTracker(); });
+$("date-next").addEventListener("click", function(){ state.viewDate = shiftDate(state.viewDate, 1); state.editIdx = null; state.copyArm = false; showCopyMsg(""); renderTracker(); });
+$("date-label").addEventListener("click", function(){ state.viewDate = todayStr(); state.editIdx = null; state.copyArm = false; showCopyMsg(""); renderTracker(); });
+$("copy-yday").addEventListener("click", function(){
+ if (!prevDayEntries().length){
+   state.copyArm = false; syncCopyBtn();
+   showCopyMsg(t("copy_empty"));
+   return;
+ }
+ if (dayEntries().length && !state.copyArm){
+   state.copyArm = true; syncCopyBtn();
+   showCopyMsg("");
+   return;
+ }
+ var r = copyYesterday();
+ state.copyArm = false;
+ state.editIdx = null;
+ renderTracker();
+ showCopyMsg(t("copy_done").replace("%N", r.count));
+});
 $("reg-entries").addEventListener("click", function(e){
  var ed = e.target.closest("[data-edit]");
  if (ed){

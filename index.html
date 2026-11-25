@@ -10,7 +10,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Handful" />
 <link rel="icon" href="data:," />
-<link rel="manifest" href='data:application/manifest+json,{"name":"Handful","short_name":"Handful","display":"standalone","background_color":"%23FAF6EF","theme_color":"%231E5631","start_url":"."}' />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
 <title>Handful — by Pelaez Nutrition</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -1885,6 +1886,13 @@ syncAdjSeg();
 syncFormFromProfile();
 syncBodyForm();
 renderAll();
+
+/* PWA: registro del service worker (red primero; la caché es solo respaldo sin conexión). */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () { /* la app funciona igual sin SW */ });
+  });
+}
 </script>
 </body>
 </html>

@@ -33,12 +33,12 @@
   }
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%; scroll-padding-top:96px; scroll-padding-bottom:170px}
+html{-webkit-text-size-adjust:100%; scroll-padding-top:96px; scroll-padding-bottom:120px}
 body{
   margin:0; background:var(--paper); color:var(--ink);
   font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
   font-size:16px; line-height:1.45;
-  padding-bottom:calc(150px + env(safe-area-inset-bottom));
+  padding-bottom:calc(92px + env(safe-area-inset-bottom));
 }
 h1,h2,h3,.serif{font-family:"Fraunces",Georgia,serif; margin:0}
 button,[role="button"],select,summary,input:not([type="checkbox"],[type="radio"]){min-height:2.75rem}
@@ -68,7 +68,7 @@ img{max-width:100%; display:block}
 .langtoggle button.on{background:#FBF7EC; color:var(--green)}
 
 /* ---------- Layout ---------- */
-main{max-width:1060px; margin:0 auto; padding:16px 16px 8px}
+main{max-width:1060px; margin:0 auto; padding:20px 16px 8px}
 .screen{display:none}
 .screen.active{display:block; animation:fadein .25s ease}
 @keyframes fadein{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none}}
@@ -76,14 +76,14 @@ main{max-width:1060px; margin:0 auto; padding:16px 16px 8px}
 .kicker{font-size:12px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--green2)}
 @media (prefers-color-scheme: dark){ .kicker{color:var(--amber-soft)} }
 .screen h2{font-size:30px; font-weight:900; line-height:1.08; margin:4px 0 6px}
-.lede{color:var(--ink2); margin:0 0 14px; max-width:56ch}
+.lede{color:var(--ink2); margin:0 0 18px; max-width:56ch}
 .card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); padding:18px}
 .grid{display:grid; gap:14px}
 @media (min-width:760px){ .grid.cols2{grid-template-columns:1fr 1fr} .grid.cols3{grid-template-columns:repeat(3,1fr)} .grid.cols4{grid-template-columns:repeat(4,1fr)} }
 
 /* ---------- Form ---------- */
 label.flabel{display:block; font-size:13px; font-weight:700; letter-spacing:.02em; margin:0 0 6px}
-.field{margin-bottom:12px}
+.field{margin-bottom:16px}
 input[type="number"],input[type="text"],input[type="search"],select{
   width:100%; border:1.5px solid var(--line); border-radius:12px; background:var(--card);
   color:var(--ink); padding:10px 12px; font:inherit; font-size:16px;
@@ -260,27 +260,19 @@ table.calc td:first-child{font-weight:600}
           </select>
         </div>
       </div>
-      <div class="field">
-        <div class="two">
-          <div>
-            <label class="flabel" for="f-height-ft" data-i18n="f_height_ft">Estatura — pies (ft)</label>
-            <input type="number" id="f-height-ft" min="3" max="8" inputmode="numeric" />
-          </div>
-          <div>
-            <label class="flabel" for="f-height-in" data-i18n="f_height_in">Estatura — pulgadas (in)</label>
-            <input type="number" id="f-height-in" min="0" max="11" step="0.5" inputmode="decimal" />
-          </div>
-        </div>
-      </div>
       <div class="two">
         <div class="field">
-          <label class="flabel" for="f-weight" data-i18n="f_weight">Peso actual (lb)</label>
-          <input type="number" id="f-weight" min="77" max="660" step="0.5" inputmode="decimal" />
+          <label class="flabel" for="f-height" data-i18n="f_height">Estatura (cm)</label>
+          <input type="number" id="f-height" min="120" max="230" inputmode="numeric" />
         </div>
         <div class="field">
-          <label class="flabel" for="f-goalweight" data-i18n="f_goalweight">Peso meta (lb)</label>
-          <input type="number" id="f-goalweight" min="77" max="660" step="0.5" inputmode="decimal" />
+          <label class="flabel" for="f-weight" data-i18n="f_weight">Peso actual (kg)</label>
+          <input type="number" id="f-weight" min="35" max="300" step="0.5" inputmode="decimal" />
         </div>
+      </div>
+      <div class="field">
+        <label class="flabel" for="f-goalweight" data-i18n="f_goalweight">Peso meta (kg)</label>
+        <input type="number" id="f-goalweight" min="35" max="300" step="0.5" inputmode="decimal" />
       </div>
       <div class="field">
         <label class="flabel" data-i18n="f_goal">Objetivo</label>
@@ -335,7 +327,7 @@ table.calc td:first-child{font-weight:600}
       <div class="card numcard">
         <div class="lab" data-i18n="m_protein">Proteína</div>
         <div class="val"><span id="n-protein">0</span> <small>g</small></div>
-        <p data-i18n="m_protein_d">0.9 g por libra de tu peso, siempre. Es la base del método.</p>
+        <p data-i18n="m_protein_d">2.0 g por kilo de tu peso, siempre. Es la base del método.</p>
         <div class="macrobar"><i id="bar-protein" style="background:var(--green2)"></i></div>
       </div>
       <div class="card numcard">
@@ -347,7 +339,7 @@ table.calc td:first-child{font-weight:600}
       <div class="card numcard">
         <div class="lab" data-i18n="m_fat">Grasa</div>
         <div class="val"><span id="n-fat">0</span> <small>g</small></div>
-        <p data-i18n="m_fat_d">0.36 g por libra de tu peso: la grasa que tu cuerpo necesita cada día.</p>
+        <p data-i18n="m_fat_d">0.8 g por kilo de tu peso: la grasa que tu cuerpo necesita cada día.</p>
         <div class="macrobar"><i id="bar-fat" style="background:#8A6D3B"></i></div>
       </div>
     </div>
@@ -425,8 +417,8 @@ table.calc td:first-child{font-weight:600}
     <p class="lede" data-i18n="calc_lede">Mueve el peso y el ajuste y mira cómo cambian tus números, tus macros y los gramos de cada alimento — en vivo.</p>
     <div class="card" style="margin-bottom:14px">
       <div class="field">
-        <label class="flabel" for="calc-weight"><span data-i18n="calc_weight">Peso</span>: <b><span id="calc-weight-val">203</span> lb</b></label>
-        <input type="range" id="calc-weight" min="110" max="330" step="1" />
+        <label class="flabel" for="calc-weight"><span data-i18n="calc_weight">Peso</span>: <b><span id="calc-weight-val">92</span> kg</b></label>
+        <input type="range" id="calc-weight" min="50" max="150" step="1" />
       </div>
       <div class="field" style="margin-bottom:4px">
         <label class="flabel" data-i18n="calc_adj">Ajuste de calorías</label>
@@ -542,7 +534,7 @@ es:{
  datos_kicker:"Empecemos por ti", datos_h:"Tus datos",
  datos_lede:"Con estos datos la app calcula tus números y arma tu plan. Viene cargado un perfil de ejemplo para que lo veas funcionando: cámbialo cuando quieras.",
  f_age:"Edad (años)", f_sex:"Sexo", sex_m:"Hombre", sex_f:"Mujer",
- f_height:"Estatura", f_height_ft:"Estatura — pies (ft)", f_height_in:"Estatura — pulgadas (in)", f_weight:"Peso actual (lb)", f_goalweight:"Peso meta (lb)",
+ f_height:"Estatura (cm)", f_weight:"Peso actual (kg)", f_goalweight:"Peso meta (kg)",
  f_goal:"Objetivo", goal_lose:"Perder", goal_maintain:"Mantener", goal_gain:"Ganar",
  f_activity:"Actividad", act_sed:"Sedentario", act_weights:"Entrena con pesas", act_active:"Activo",
  f_avoid:"Alimentos que no comes (toca para marcar)",
@@ -556,11 +548,11 @@ es:{
  n_bmr:"TMB — metabolismo basal", n_bmr_d:"Lo que tu cuerpo gasta en reposo total, sin moverte.",
  n_maint:"Mantenimiento", n_maint_d:"Tu TMB multiplicada por tu nivel de actividad: lo que gastas en un día normal.",
  n_macros_h:"Tus macros del día",
- m_protein:"Proteína", m_protein_d:"0.9 g por libra de tu peso, siempre. Es la base del método.",
+ m_protein:"Proteína", m_protein_d:"2.0 g por kilo de tu peso, siempre. Es la base del método.",
  m_carbs:"Carbohidratos",
- m_carbs_d_lose:"El resto de tus calorías, con tope de 0.9 g por libra. En tu plan van 0% en el desayuno, 40% en el almuerzo y 60% en la cena.",
+ m_carbs_d_lose:"El resto de tus calorías, con tope de 2.0 g por kilo. En tu plan van 0% en el desayuno, 40% en el almuerzo y 60% en la cena.",
  m_carbs_d_other:"El resto de tus calorías, una vez cubiertas la proteína y la grasa.",
- m_fat:"Grasa", m_fat_d:"0.36 g por libra de tu peso: la grasa que tu cuerpo necesita cada día.",
+ m_fat:"Grasa", m_fat_d:"0.8 g por kilo de tu peso: la grasa que tu cuerpo necesita cada día.",
  plan_kicker:"Un día, armado para ti", plan_h:"Tu plan de hoy",
  plan_lede:"Cuatro comidas con alimentos de verdad y los gramos exactos según tus números. Cada comida tiene 3 variantes: rota hasta encontrar la tuya.",
  plan_variant:"Otra variante",
@@ -584,6 +576,11 @@ es:{
  guide_eq_thumb:"En grasa, eso equivale a ~%X pulgar(es): cada pulgar es 1 cucharada.",
  guide_eq_golf:"Compáralo con pelotas de golf: son ~%X pelota(s).",
  guide_eq_handful:"Son ~%X puñado(s): cada puñado pesa unos 30 g.",
+ guide_eq_eggs:"Eso son ~%X huevo(s) mediano(s). Los huevos se cuentan por unidad, no por gramos: cada mediano pesa ~44 g.",
+ guide_eq_hass:"Piensa en aguacates Hass pequeños: tu porción es ~%X. La pulpa de uno pequeño pesa ~100 g; medio, ~50 g.",
+ prep_line:"Hervidos ≈ %B kcal · Revueltos ≈ %S kcal · Fritos ≈ %F kcal",
+ unit_egg_one:"huevo mediano", unit_egg_many:"huevos medianos",
+ unit_hass_one:"aguacate Hass", unit_hass_many:"aguacates Hass",
  reg_kicker:"Registro manual, contra tu plan", reg_h:"Lo que comiste hoy",
  reg_lede:"Anota en gramos o en puñados — la app convierte — y mira tu día contra las metas de TU plan. Todo queda en este dispositivo.",
  reg_progress_h:"Tu día contra tu plan", reg_add_h:"Añadir una comida",
@@ -610,7 +607,7 @@ en:{
  datos_kicker:"Start with you", datos_h:"Your details",
  datos_lede:"The app uses these details to calculate your numbers and build your plan. A sample profile is preloaded so you can see it working — change it any time.",
  f_age:"Age (years)", f_sex:"Sex", sex_m:"Male", sex_f:"Female",
- f_height:"Height", f_height_ft:"Height — feet (ft)", f_height_in:"Height — inches (in)", f_weight:"Current weight (lb)", f_goalweight:"Goal weight (lb)",
+ f_height:"Height (cm)", f_weight:"Current weight (kg)", f_goalweight:"Goal weight (kg)",
  f_goal:"Goal", goal_lose:"Lose", goal_maintain:"Maintain", goal_gain:"Gain",
  f_activity:"Activity", act_sed:"Sedentary", act_weights:"Lifts weights", act_active:"Active",
  f_avoid:"Foods you don't eat (tap to mark)",
@@ -624,11 +621,11 @@ en:{
  n_bmr:"BMR — basal metabolic rate", n_bmr_d:"What your body burns at complete rest, without moving.",
  n_maint:"Maintenance", n_maint_d:"Your BMR multiplied by your activity level: what you burn on a normal day.",
  n_macros_h:"Your daily macros",
- m_protein:"Protein", m_protein_d:"0.9 g per pound of your weight, always. It is the foundation of the method.",
+ m_protein:"Protein", m_protein_d:"2.0 g per kilo of your weight, always. It is the foundation of the method.",
  m_carbs:"Carbs",
- m_carbs_d_lose:"The rest of your calories, capped at 0.9 g per pound. In your plan they go 0% at breakfast, 40% at lunch and 60% at dinner.",
+ m_carbs_d_lose:"The rest of your calories, capped at 2.0 g per kilo. In your plan they go 0% at breakfast, 40% at lunch and 60% at dinner.",
  m_carbs_d_other:"The rest of your calories, once protein and fat are covered.",
- m_fat:"Fat", m_fat_d:"0.36 g per pound of your weight: the fat your body needs each day.",
+ m_fat:"Fat", m_fat_d:"0.8 g per kilo of your weight: the fat your body needs each day.",
  plan_kicker:"One day, built for you", plan_h:"Your plan for today",
  plan_lede:"Four meals with real food and the exact grams for your numbers. Each meal has 3 variants: rotate until you find yours.",
  plan_variant:"Another variant",
@@ -652,6 +649,11 @@ en:{
  guide_eq_thumb:"In fat terms, that is ~%X thumb(s): each thumb is 1 tablespoon.",
  guide_eq_golf:"Compare it with golf balls: that is ~%X ball(s).",
  guide_eq_handful:"That is ~%X handful(s): each handful weighs about 30 g.",
+ guide_eq_eggs:"That is ~%X medium egg(s). Eggs are counted by the unit, not by grams: each medium egg weighs ~44 g.",
+ guide_eq_hass:"Think small Hass avocados: your portion is ~%X. The flesh of a small one weighs ~100 g; half, ~50 g.",
+ prep_line:"Boiled ≈ %B kcal · Scrambled ≈ %S kcal · Fried ≈ %F kcal",
+ unit_egg_one:"medium egg", unit_egg_many:"medium eggs",
+ unit_hass_one:"Hass avocado", unit_hass_many:"Hass avocados",
  reg_kicker:"Manual log, against your plan", reg_h:"What you ate today",
  reg_lede:"Log in grams or in handfuls — the app converts — and watch your day against YOUR plan's targets. Everything stays on this device.",
  reg_progress_h:"Your day vs. your plan", reg_add_h:"Add a meal",
@@ -678,11 +680,11 @@ en:{
 /* ================= State (in-memory only) ================= */
 var state = {
  lang:"es",
- profile:{ age:47, sex:"M", heightFt:5, heightIn:10, weightLb:203, goalWeightLb:185, goal:"lose", activity:"weights", avoids:{} },
+ profile:{ age:47, sex:"M", height:178, weight:92, goalWeight:84, goal:"lose", activity:"weights", avoids:{} },
  variants:[0,0,0,0],
  entries:[],           /* {foodId, grams} */
  selFood:null, selUnit:"handful",
- calcWeight:203, calcAdj:-150
+ calcWeight:92, calcAdj:-150
 };
 var ACTF = { sedentary:1.2, weights:1.45, active:1.65 };
 
@@ -694,11 +696,9 @@ function fmt(x){ return Math.round(x).toLocaleString(state.lang==="en" ? "en-US"
 function fmt1(x){ return (Math.round(x*10)/10).toString().replace(".", state.lang==="en" ? "." : ","); }
 
 /* ================= The method ================= */
-function compute(p, weightLbOverride, adjOverride){
- var wLb = (weightLbOverride != null ? weightLbOverride : p.weightLb);
- var w = wLb / 2.2046226218;
- var hCm = p.heightFt*30.48 + p.heightIn*2.54;
- var bmr = 10*w + 6.25*hCm - 5*p.age + (p.sex==="M" ? 5 : -161);
+function compute(p, weightOverride, adjOverride){
+ var w = (weightOverride != null ? weightOverride : p.weight);
+ var bmr = 10*w + 6.25*p.height - 5*p.age + (p.sex==="M" ? 5 : -161);
  var maint = bmr * ACTF[p.activity];
  var adj = (adjOverride != null ? adjOverride : (p.goal==="lose" ? -150 : (p.goal==="gain" ? 300 : 0)));
  var target = maint + adj;
@@ -707,7 +707,7 @@ function compute(p, weightLbOverride, adjOverride){
  var carbs = rest/4;
  if (p.goal==="lose") carbs = Math.min(carbs, 2.0*w);
  carbs = Math.max(0, carbs);
- return { weight:w, weightLb:wLb, bmr:bmr, maint:maint, adj:adj, target:target, protein:protein, fat:fat, carbs:carbs };
+ return { weight:w, bmr:bmr, maint:maint, adj:adj, target:target, protein:protein, fat:fat, carbs:carbs };
 }
 function mealTargets(nums){
  var p = state.profile;
@@ -748,6 +748,41 @@ function buildMeal(mealIdx){
 function buildPlan(){ return MEALS.map(function(m, i){ return buildMeal(i); }); }
 function macrosOf(food, grams){ var k = grams/100; return { kcal:food.kcal*k, p:food.p*k, c:food.c*k, f:food.f*k }; }
 
+/* ===== Household units: eggs counted by the egg, avocado by the Hass fruit ===== */
+var EGG_G = 44;    /* one medium egg */
+var HASS_G = 100;  /* flesh of one small Hass avocado */
+/* kcal per medium egg by preparation: boiled = the egg itself (155 kcal/100 g × 44 g ≈ 68);
+   scrambled adds a touch of butter/milk; fried adds the pan oil the egg absorbs */
+var EGG_KCAL = { b:68, s:85, f:95 };
+function roundHalf(x){ return Math.max(.5, Math.round(x*2)/2); }
+function fmtFrac(x){
+ var w = Math.floor(x), half = (x - w) >= .5;
+ if (w === 0) return half ? "½" : "0";
+ return half ? w + "½" : String(w);
+}
+function unitParts(food, grams){
+ if (food.id === "huevo"){
+   var n = roundHalf(grams / EGG_G);
+   return { num:"≈ " + fmtFrac(n), word: t(n <= 1 ? "unit_egg_one" : "unit_egg_many") };
+ }
+ if (food.id === "aguacate"){
+   var m = roundHalf(grams / HASS_G);
+   return { num:"≈ " + fmtFrac(m), word: t(m <= 1 ? "unit_hass_one" : "unit_hass_many") };
+ }
+ return null;
+}
+function unitText(food, grams){
+ var u = unitParts(food, grams);
+ return u ? u.num + " " + u.word : null;
+}
+function eggPrepLine(grams){
+ var n = grams / EGG_G;
+ return t("prep_line")
+   .replace("%B", fmt(EGG_KCAL.b * n))
+   .replace("%S", fmt(EGG_KCAL.s * n))
+   .replace("%F", fmt(EGG_KCAL.f * n));
+}
+
 /* ================= Reference objects (SVG line icons) ================= */
 function refIcon(kind, size){
  var s = size || 34, c = 'width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
@@ -758,6 +793,8 @@ function refIcon(kind, size){
  if (kind==="tennis") return '<svg '+c+'><circle cx="12" cy="12" r="8.5"/><path d="M5.5 6.5c3 2.4 3 8.6 0 11M18.5 6.5c-3 2.4-3 8.6 0 11"/></svg>';
  if (kind==="golf") return '<svg '+c+'><circle cx="12" cy="12" r="8.5"/><circle cx="9.5" cy="9.5" r=".4" fill="currentColor"/><circle cx="14" cy="9" r=".4" fill="currentColor"/><circle cx="11.8" cy="13" r=".4" fill="currentColor"/><circle cx="15" cy="14.5" r=".4" fill="currentColor"/><circle cx="8.8" cy="14.8" r=".4" fill="currentColor"/></svg>';
  if (kind==="cards") return '<svg '+c+'><rect x="6" y="4.5" width="12.5" height="16" rx="2" transform="rotate(4 12 12)"/><rect x="5" y="3.5" width="12.5" height="16" rx="2" transform="rotate(-5 11 11)" fill="var(--card)"/></svg>';
+ if (kind==="egg") return '<svg '+c+'><ellipse cx="12" cy="13" rx="7" ry="9"/><circle cx="12" cy="14.5" r="3"/></svg>';
+ if (kind==="hass") return '<svg '+c+'><path d="M12 3.2c2.8 0 4.3 2.4 4.3 4.9 1.9 1.2 2.9 3 2.9 5.1a7.2 7.2 0 1 1-14.4 0c0-2.1 1-3.9 2.9-5.1 0-2.5 1.5-4.9 4.3-4.9z"/><circle cx="12" cy="15.5" r="2.6"/></svg>';
  return "";
 }
 var REFS = [
@@ -771,6 +808,8 @@ var REFS = [
 ];
 function guideFor(food, grams){
  function eq(key, x){ return t(key).replace("%X", fmt1(x)); }
+ if (food.id==="huevo") return { kind:"egg", text: t("guide_eq_eggs").replace("%X", fmtFrac(roundHalf(grams/EGG_G))) };
+ if (food.id==="aguacate") return { kind:"hass", text: t("guide_eq_hass").replace("%X", fmtFrac(roundHalf(grams/HASS_G))) };
  if (food.type==="protein"){
    if (grams <= 130) return { kind:"cards", text: eq("guide_eq_cards", grams/95) };
    return { kind:"palm", text: eq("guide_eq_palm", grams/110) };
@@ -823,9 +862,14 @@ function renderPlan(){
    var mt = plan[i].targets;
    var rows = plan[i].items.map(function(it){
      var mm = macrosOf(it.food, it.grams);
+     var unit = unitParts(it.food, it.grams);
+     var prep = it.food.id === "huevo" ? '<span class="fmac">'+eggPrepLine(it.grams)+'</span>' : '';
+     var gramsHtml = unit
+       ? '<div class="fgrams">'+unit.num+' <small>'+unit.word+' · '+fmt(it.grams)+' g</small></div>'
+       : '<div class="fgrams">'+fmt(it.grams)+' <small>g</small></div>';
      return '<div class="foodrow"><div><span class="fname">'+fname(it.food)+'</span>'+
-       '<span class="fmac">'+fmt(mm.kcal)+' kcal · P '+fmt(mm.p)+' g · C '+fmt(mm.c)+' g · G '+fmt(mm.f)+' g</span></div>'+
-       '<div class="fgrams">'+fmt(it.grams)+' <small>g</small></div></div>';
+       '<span class="fmac">'+fmt(mm.kcal)+' kcal · P '+fmt(mm.p)+' g · C '+fmt(mm.c)+' g · G '+fmt(mm.f)+' g</span>'+prep+'</div>'+
+       gramsHtml+'</div>';
    }).join("");
    return '<div class="card"><div class="mealhead"><div><h3>'+t("meal_"+m.id)+'</h3>'+
      '<div class="mealmeta">P '+fmt(mt.protein)+' g · C '+fmt(mt.carbs)+' g</div></div>'+
@@ -847,8 +891,11 @@ function renderGuide(){
  });
  Object.keys(seen).forEach(function(id){
    var it = seen[id], g = guideFor(it.food, it.grams);
+   var unit = unitText(it.food, it.grams);
+   var head = unit ? unit : (fmt(it.grams)+' g');
+   var tail = unit ? ' ('+fmt(it.grams)+' g)' : '';
    cards.push('<div class="card refcard"><div class="reficon">'+refIcon(g.kind, 34)+'</div><div>'+
-     '<h3>'+fname(it.food)+'</h3><div class="rgrams">'+fmt(it.grams)+' g</div><p>'+g.text+'</p></div></div>');
+     '<h3>'+fname(it.food)+'</h3><div class="rgrams">'+head+'</div><p>'+g.text+tail+'</p></div></div>');
  });
  $("guide-cards").innerHTML = cards.join("");
 }
@@ -931,19 +978,18 @@ function renderAll(){ applyI18n(); renderAvoidChips(); renderNumbers(); renderPl
 function syncFormFromProfile(){
  var p = state.profile;
  $("f-age").value = p.age; $("f-sex").value = p.sex;
- $("f-height-ft").value = p.heightFt; $("f-height-in").value = p.heightIn; $("f-weight").value = p.weightLb; $("f-goalweight").value = p.goalWeightLb;
+ $("f-height").value = p.height; $("f-weight").value = p.weight; $("f-goalweight").value = p.goalWeight;
  document.querySelectorAll("#seg-goal button").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-goal")===p.goal); });
  document.querySelectorAll("#seg-activity button").forEach(function(b){ b.classList.toggle("on", b.getAttribute("data-act")===p.activity); });
 }
 function refreshDerived(){ renderNumbers(); renderPlan(); renderGuide(); renderTracker(); }
-["f-age","f-height-ft","f-height-in","f-weight","f-goalweight"].forEach(function(id){
+["f-age","f-height","f-weight","f-goalweight"].forEach(function(id){
  $(id).addEventListener("input", function(){
    var v = parseFloat(this.value); if (isNaN(v)) return;
    if (id==="f-age") state.profile.age = v;
-   if (id==="f-height-ft") state.profile.heightFt = v;
-   if (id==="f-height-in") state.profile.heightIn = v;
-   if (id==="f-weight"){ state.profile.weightLb = v; state.calcWeight = v; $("calc-weight").value = v; }
-   if (id==="f-goalweight") state.profile.goalWeightLb = v;
+   if (id==="f-height") state.profile.height = v;
+   if (id==="f-weight"){ state.profile.weight = v; state.calcWeight = v; $("calc-weight").value = v; }
+   if (id==="f-goalweight") state.profile.goalWeight = v;
    refreshDerived(); renderCalc();
  });
 });
